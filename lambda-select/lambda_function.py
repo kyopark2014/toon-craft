@@ -71,9 +71,11 @@ def lambda_handler(event, context):
     #     "퇴근 후 친구들과 함께 게임을 하던 중, 그는 게임에서 승리하여 친구들에게 농담을 하며 웃음을 자아냈습니다. 그의 재치 있는 농담에 친구들은 모두 웃음을 터뜨렸습니다. :비디오_게임:"
     # ]
 
+    print(f"event: {event}")
+    
     user_id = event['user_id']
     persona = event['persona']  
-    episode = json.loads(event['episode'])
+    episode = event['episode']
     select = event['select']
 
     print(f"persona: {persona}")
