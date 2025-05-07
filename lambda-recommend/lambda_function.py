@@ -51,6 +51,7 @@ def generate_recommendation(persona, selected_episode, qa_pairs):
 
     
 def lambda_handler(event, context):
+    user_id = event['user_id']
     persona = event['persona']
     selected_episode = event['selected_episode']
     qa_pairs = event['qa_pairs']
@@ -72,10 +73,15 @@ def lambda_handler(event, context):
     # }
     # ]
 
-    result = generate_recommendation(persona, selected_episode, qa_pairs)
-    print(result)    
+    recommend = generate_recommendation(persona, selected_episode, qa_pairs)
+    print(recommend)    
+
+    result = {
+        "user_id": user_id,
+        "recommend": recommend
+    }
 
     return {
         'statusCode': 200,
-        'body': result
+        'body': json.dumps(result, ensure_ascii=False)
     }
