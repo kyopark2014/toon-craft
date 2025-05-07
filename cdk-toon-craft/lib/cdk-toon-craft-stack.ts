@@ -54,5 +54,6 @@ export class CdkToonCraftStack extends cdk.Stack {
       environment: {
       }
     });
+    
   }
 }
