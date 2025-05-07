@@ -45,7 +45,7 @@ export class CdkToonCraftStack extends cdk.Stack {
     ); 
 
     const lambdaName = `toons-craft-upload`;
-    const lambdaTools = new lambda.DockerImageFunction(this, `lambda-tools-for-${projectName}`, {
+    const lambdaUpload = new lambda.DockerImageFunction(this, `lambda-tools-for-${projectName}`, {
       description: 'toons-craft upload api',
       functionName: lambdaName,
       code: lambda.DockerImageCode.fromImageAsset(path.join(__dirname, '../../lambda-upload')),
@@ -55,5 +55,14 @@ export class CdkToonCraftStack extends cdk.Stack {
       }
     });
     
+    const lambdaSelect = new lambda.DockerImageFunction(this, `lambda-tools-for-${projectName}`, {
+      description: 'selection api of toon-craft',
+      functionName: 'toons-craft-select',
+      code: lambda.DockerImageCode.fromImageAsset(path.join(__dirname, '../../lambda-select')),
+      timeout: cdk.Duration.seconds(180),
+      role: roleLambdaTools,
+      environment: {
+      }
+    });
   }
 }
