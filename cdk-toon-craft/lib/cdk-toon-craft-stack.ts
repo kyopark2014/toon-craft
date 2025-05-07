@@ -64,5 +64,15 @@ export class CdkToonCraftStack extends cdk.Stack {
       environment: {
       }
     });
+
+    const lambdaRecommend = new lambda.DockerImageFunction(this, `lambda-recommend-for-${projectName}`, {
+      description: 'recommend api of toon-craft',
+      functionName: 'toons-craft-recommend',
+      code: lambda.DockerImageCode.fromImageAsset(path.join(__dirname, '../../lambda-recommend')),
+      timeout: cdk.Duration.seconds(180),
+      role: roleLambdaTools,
+      environment: {
+      }
+    });
   }
 }
