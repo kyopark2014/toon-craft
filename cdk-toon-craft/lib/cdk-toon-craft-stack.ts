@@ -74,5 +74,15 @@ export class CdkToonCraftStack extends cdk.Stack {
       environment: {
       }
     });
+
+    const lambdaRetrieve = new lambda.DockerImageFunction(this, `lambda-retrieve-for-${projectName}`, {
+      description: 'retrieve api of toon-craft',
+      functionName: 'toons-craft-retrieve',
+      code: lambda.DockerImageCode.fromImageAsset(path.join(__dirname, '../../lambda-retrieve')),
+      timeout: cdk.Duration.seconds(180),
+      role: roleLambdaTools,
+      environment: {
+      }
+    });
   }
 }
