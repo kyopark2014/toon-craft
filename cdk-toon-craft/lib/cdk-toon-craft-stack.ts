@@ -55,7 +55,7 @@ export class CdkToonCraftStack extends cdk.Stack {
       }
     });
     
-    const lambdaSelect = new lambda.DockerImageFunction(this, `lambda-tools-for-${projectName}`, {
+    const lambdaSelect = new lambda.DockerImageFunction(this, `lambda-select-for-${projectName}`, {
       description: 'selection api of toon-craft',
       functionName: 'toons-craft-select',
       code: lambda.DockerImageCode.fromImageAsset(path.join(__dirname, '../../lambda-select')),
