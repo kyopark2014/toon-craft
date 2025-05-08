@@ -434,6 +434,50 @@ def explain_food_recommendation(persona, selected_episode, qa_pairs, food_data):
     #     yield chunk
     return claude.converse(text=PROMPT)
 
+# Create a function to update DynamoDB table with the recommendation data
+def update_recommendation_to_dynamodb(id, episode, media_list, persona, questions, recommend, recommend_id, result):
+    """
+    Update the tooncraft DynamoDB table with recommendation data
+    
+    Args:
+        id (str): Partition key
+        episode (str): Selected episode
+        media_list (list): List of media URLs in DynamoDB format
+        persona (str): User persona description
+        questions (list): List of Q&A pairs in DynamoDB format
+        recommend (str): Recommendation text
+        recommend_id (str): Recommendation ID
+        result (str): Explanation result
+    """
+    try:
+        # Create DynamoDB client
+        dynamodb = boto3.client('dynamodb', region_name=REGION_NAME)
+        
+        # Prepare the item for DynamoDB
+        item = {
+            'id': {'S': id},  # Partition key
+            'episode': {'S': episode},
+            'media_list': {'L': media_list},  # List type
+            'persona': {'S': persona},
+            'questions': {'L': questions},  # List type
+            'recommend': {'S': recommend},
+            'recommend_id': {'S': recommend_id},
+            'result': {'S': result}
+        }
+        
+        # Put item into DynamoDB
+        response = dynamodb.put_item(
+            TableName='tooncraft',
+            Item=item
+        )
+        
+        print("Successfully updated recommendation in DynamoDB")
+        return response
+        
+    except Exception as e:
+        print(f"Error updating DynamoDB: {str(e)}")
+        raise e
+
 def lambda_handler(event, context):
     user_id = event.get('user_id', '')
     recommend = event.get('recommend', '')
@@ -594,6 +638,52 @@ def lambda_handler(event, context):
         print("HTML 파일이 성공적으로 업로드되었습니다.")
     except Exception as e:
         print(f"HTML 파일 업로드 중 오류 발생: {e}")
+
+    # Update DynamoDB with the recommendation data
+    id = id
+    episode = selected_episode
+    media_list = [
+        {"S": urls[0]},  # ingredients 비디오
+        {"S": urls[1]},  # preparation 이미지
+        {"S": urls[2]},  # cooking 이미지
+        {"S": urls[3]}   # plating 비디오
+    ]
+    persona = persona
+    questions = [
+        {
+            "M": {
+                "question": {"S": qa_pairs[0]["question"]},
+                "answer": {"S": qa_pairs[0]["answer"]}
+            }
+        },
+        {
+            "M": {
+                "question": {"S": qa_pairs[1]["question"]},
+                "answer": {"S": qa_pairs[1]["answer"]}
+            }
+        },
+        {
+            "M": {
+                "question": {"S": qa_pairs[2]["question"]},
+                "answer": {"S": qa_pairs[2]["answer"]}
+            }
+        }
+    ]
+    recommend = recommend
+    recommend_id = id
+    result = explaination
+
+    result = update_recommendation_to_dynamodb(
+        id=id,
+        episode=episode,
+        media_list=media_list,
+        persona=persona,
+        questions=questions,
+        recommend=recommend,
+        recommend_id=recommend_id,
+        result=result
+    )
+    print(f"result: {result}")
     
     result = {
         "user_id": user_id,
