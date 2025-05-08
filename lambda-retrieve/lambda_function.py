@@ -491,9 +491,9 @@ def update_recommendation_to_dynamodb(id, episode, media_list, persona, question
             'media_list': {'L': media_list},  # List type
             'persona': {'S': persona},
             'questions': {'L': questions},  # List type
-            'recommend': {'M': json.loads(recommend) if isinstance(recommend, str) else recommend},
+            'recommend': {'S': recommend},
             'recommend_id': {'S': recommend_id},
-            'result': {'M': json.loads(result) if isinstance(result, str) else result}
+            'result': {'S': result}
         }
         
         # Put item into DynamoDB
