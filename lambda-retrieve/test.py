@@ -7,6 +7,16 @@ from genai_kit.aws.claude import BedrockClaude
 from genai_kit.aws.embedding import BedrockEmbedding
 from opensearchpy import OpenSearch, RequestsHttpConnection
 from boto3.dynamodb.types import TypeDeserializer
+import random
+
+image_bucket_name = 'toon-craft-gen-imgs-v2'
+video_bucket_name = 'tooncraft-videos-v2'
+image_prefix = 'familiar-15-menus2/'
+video_prefix = 'multi_shot_automated_2/'
+
+image_cf = 'https://d2w79zoxq32d33.cloudfront.net'
+video_cf = 'https://d3dybxg1g4fwkj.cloudfront.net'
+
 
 canvas = BedrockAmazonImage(modelId=BedrockModel.NOVA_CANVAS)
 REGION_NAME = "ap-northeast-1"
@@ -137,11 +147,7 @@ try:
 except Exception as e:
     print(f"데이터를 불러오는 중 오류가 발생했습니다: {e}")
 
-video_bucket_name = 'tooncraft-videos-v2'
-bucket_name = 'toon-craft-gen-imgs-v2'
-prefix = 'familiar-15-menus2/'
-
-def get_s3_image_list(bucket_name, prefix):
+def get_s3_list(bucket_name, prefix):
     """
     Function to retrieve and return a list of objects from the toon-craft-gen-imgs/familiar-15-menus bucket
     """
@@ -203,88 +209,179 @@ def convert_timestr_to_datetime(timestr):
         day = int(timestr[6:8])
         return datetime(year, month, day)
 
-def parse_object_name(object_name):
+def parse_object_name(object_name, prefix):
     #objectName = "120_Doenjang_Jjigae_1_ingredients_5_20250414_202423.png"
     #               0       1      2   3        4    5    6       7
     #objectName = "328_Dried_Radish_Green_Set_Meal_1_ingredients_1_20250417.png"
 
     # .png 확장자 제거
-    if object_name.endswith('.png'):
+    if object_name.endswith('.png') or object_name.endswith('.mp4'):
         name = object_name[:-4]
-    print(f"name: {name}")
+        print(f"name: {name}")
 
-    parts = name.split('_')
-    print(f"parts: {parts}")
+        parts = name.split('_')
+        print(f"parts: {parts}")
     
-    pos = len(parts)-1
-    for i in range(len(parts)):
-        print(f"parts[{i}]: {parts[i]}")
-        if parts[i].startswith('2025'):
-            print(f"parts[i]: {parts[i]}")
-            pos = i
-            break
-    print(f"pos: {pos}")
-    # id
-    id = parts[0] 
-    print(f"id: {id}")
-    
-    # step_image_id
-    step_image_id = parts[pos-3]+'_'+parts[pos-2]+'_'+parts[pos-1] 
-    print(f"step_image_id: {step_image_id}")
+        pos = len(parts)-1
+        for i in range(len(parts)):
+            print(f"parts[{i}]: {parts[i]}")
+            if parts[i].startswith('2025'):
+                print(f"parts[i]: {parts[i]}")
+                pos = i
+                break
+        print(f"pos: {pos}")
+        # id
+        id = parts[0] 
+        print(f"id: {id}")
         
-    # create_at
-    timestr = ""
-    if pos == len(parts)-1:
-        timestr = parts[pos]
+        # step_image_id
+        step_image_id = parts[pos-3]+'_'+parts[pos-2]+'_'+parts[pos-1] 
+        print(f"step_image_id: {step_image_id}")
+            
+        # create_at
+        timestr = ""
+        if pos == len(parts)-1:
+            timestr = parts[pos]
+        else:
+            timestr = parts[pos]+'_'+parts[pos+1]
+        print(f"timestr: {timestr}")
+        create_at = convert_timestr_to_datetime(timestr)
+        print(f"create_at: {create_at}")
+        
+        # image_index
+        image_index = parts[pos-3]
+        print(f"image_index: {image_index}")
+        
+        # menu
+        menu = ""
+        for i in range(1, pos-3):
+            # print(f"parts[i]: {parts[i]}")
+            menu += parts[i]+' '
+        print(f"menu: {menu}")
+        
+        # s3_uri    
+        s3_uri = f's3://{image_bucket_name}/{prefix}'+object_name
+        print(f"s3_uri: {s3_uri}")
+        
+        # step
+        step = parts[pos-3]+'_'+parts[pos-2]
+        print(f"step: {step}")
+        
+        # 분리된 부분을 매핑
+        data = {
+            'id': id,
+            'step_image_id': step_image_id,
+            'create_at': str(create_at),
+            'image_index': image_index,
+            'menu': menu[:len(menu)-1],
+            's3_uri': s3_uri,
+            'step': step
+        }
+    
+        return data
     else:
-        timestr = parts[pos]+'_'+parts[pos+1]
-    print(f"timestr: {timestr}")
-    create_at = convert_timestr_to_datetime(timestr)
-    print(f"create_at: {create_at}")
-    
-    # image_index
-    image_index = parts[pos-3]
-    print(f"image_index: {image_index}")
-    
-    # menu
-    menu = ""
-    for i in range(1, pos-3):
-        # print(f"parts[i]: {parts[i]}")
-        menu += parts[i]+' '
-    print(f"menu: {menu}")
-    
-    # s3_uri    
-    s3_uri = f's3://{bucket_name}/{prefix}'+object_name
-    print(f"s3_uri: {s3_uri}")
-    
-    # step
-    step = parts[pos-3]+'_'+parts[pos-2]
-    print(f"step: {step}")
-        
-    # 분리된 부분을 매핑
-    data = {
-        'id': id,
-        'step_image_id': step_image_id,
-        'create_at': str(create_at),
-        'image_index': image_index,
-        'menu': menu[:len(menu)-1],
-        's3_uri': s3_uri,
-        'step': step
-    }
-    
-    return data
+        return None
 
-image_list = get_s3_image_list(bucket_name, prefix)
+def get_url(selected_data):
+    s3_uri = selected_data.get('s3_uri')
+
+    # s3_uri에서 확장자 추출
+    ext = s3_uri.split('.')[-1] if s3_uri else None
+    print(f"ext: {ext}")
+
+    if ext == 'mp4':
+        prefix = "s3://"+video_bucket_name+"/"
+        last = s3_uri.replace(prefix, '')
+        prefix = "s3://"+image_bucket_name+"/"
+        last = s3_uri.replace(prefix, '')
+        print(f"last: {last}")
+        
+        url = video_cf + '/' + last
+        print(f"url: {url}")
+    else:
+        prefix = "s3://"+image_bucket_name+"/"
+        last = s3_uri.replace(prefix, '')
+        print(f"last: {last}")
+        
+        url = image_cf + '/' + last
+        print(f"url: {url}")
+        
+    return url
+
+image_list = get_s3_list(image_bucket_name, prefix=image_prefix)
 print(f"image_list: {image_list}")
 
+video_list = get_s3_list(video_bucket_name, prefix=video_prefix)
+print(f"video_list: {video_list}")
+
+
+
 item_data = {}
+ingredients = [] 
+preparation = []
+cooking = []
+plating = []
+id = "120"
+
+for video in video_list:
+    #print(f"image: {image}")
+    video = video.replace(video_prefix, '')
+    print(f"video: {video}")
+        
+    item_data = parse_object_name(video, video_prefix)    
+    if item_data:    
+        step = item_data.get('step')
+        if 'ingredients' in step and id == item_data.get('id'):
+            ingredients.append(item_data)
+        if 'plating' in step and id == item_data.get('id'):
+            plating.append(item_data)
+        
+print(f"ingredients: {ingredients}")
+print(f"plating: {plating}")
+
 for image in image_list:
     #print(f"image: {image}")
-    image = image.replace(prefix, '')
+    image = image.replace(image_prefix, '')
     print(f"image: {image}")
-    item_data = parse_object_name(image)
+        
+    item_data = parse_object_name(image, image_prefix)
+    if item_data:
+        step = item_data.get('step')
+        if 'preparation' in step and id == item_data.get('id'):
+            preparation.append(item_data)
+        if 'cooking' in step and id == item_data.get('id'):
+            cooking.append(item_data)
 
-print(f"item_data: {item_data}")
+print(f"preparation: {preparation}")
+print(f"cooking: {cooking}")
+
+import random
+selected_ingredients = random.choice(ingredients) if ingredients else None
+print(f"selected_ingredients: {selected_ingredients}")
+
+selected_preparation = random.choice(preparation) if preparation else None
+print(f"selected_preparation: {selected_preparation}")
+    
+selected_cooking = random.choice(cooking) if cooking else None
+print(f"selected_cooking: {selected_cooking}")
+
+selected_plating = random.choice(plating) if plating else None
+print(f"selected_plating: {selected_plating}")  
+
+
+
+preparation_url = get_url(selected_preparation)
+cooking_url = get_url(selected_cooking)
+plating_url = get_url(selected_plating)
+ingredients_url = get_url(selected_ingredients)
+
+# Ingredients - video
+# Preparation - image
+# Cooking- image
+# Plating - video
+
+urls = [ingredients_url, preparation_url, cooking_url, plating_url]
+print(f"urls: {urls}")
 
 result = {
     "img_key": food_data.get('img_key', ''),
