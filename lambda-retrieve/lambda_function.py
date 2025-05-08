@@ -698,7 +698,7 @@ def lambda_handler(event, context):
             "recommend": recommend,
             "recommend_id": recommend_id,
             "result": explaination
-        })
+        }, ensure_ascii=False)
     )
     print(f"result: {result}")
     
