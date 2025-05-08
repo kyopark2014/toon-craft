@@ -13,7 +13,8 @@ from boto3.dynamodb.types import TypeDeserializer
 canvas = BedrockAmazonImage(modelId=BedrockModel.NOVA_CANVAS)
 REGION_NAME = "ap-northeast-1"
 opensearch_index = 'hur-resto'
-opensearch_endpoint = 'https://search-hur-restaurants-dev-oww5qyphshcdrsh2sqizoqkdh4.aos.ap-northeast-1.on.aws'
+# opensearch_endpoint = 'https://search-hur-restaurants-dev-oww5qyphshcdrsh2sqizoqkdh4.aos.ap-northeast-1.on.aws'
+opensearch_endpoint = 'https://search-hur-resto-vm43dk4lexqui6474vojkfuyhy.aos.ap-northeast-1.on.aws'
 dynamodb = boto3.client(
     'dynamodb',
     region_name=REGION_NAME,
@@ -530,7 +531,6 @@ def lambda_handler(event, context):
     # }
     id = food_data.get('id', '')
     print(f"id: {id}")
-    id = "120"
 
     item = ""
     try:
