@@ -366,47 +366,49 @@ def lambda_handler(event, context):
             if 'plating' in step and id == item_data.get('id'):
                 plating.append(item_data)
             
-        print(f"ingredients: {ingredients}")
-        print(f"plating: {plating}")
+    print(f"ingredients: {ingredients}")
+    print(f"plating: {plating}")
 
-        for image in image_list:
-            image = image.replace(image_prefix, '')
-            #print(f"image: {image}")
-                
-            item_data = parse_object_name(image, image_prefix)
-            if item_data:
-                step = item_data.get('step')
-                if 'preparation' in step and id == item_data.get('id'):
-                    preparation.append(item_data)
-                if 'cooking' in step and id == item_data.get('id'):
-                    cooking.append(item_data)
-
-        print(f"preparation: {preparation}")
-        print(f"cooking: {cooking}")
-        
-        selected_ingredients = random.choice(ingredients) if ingredients else None
-        print(f"selected_ingredients: {selected_ingredients}")
-
-        selected_preparation = random.choice(preparation) if preparation else None
-        print(f"selected_preparation: {selected_preparation}")
+    for image in image_list:
+        image = image.replace(image_prefix, '')
+        #print(f"image: {image}")
             
-        selected_cooking = random.choice(cooking) if cooking else None
-        print(f"selected_cooking: {selected_cooking}")
+        item_data = parse_object_name(image, image_prefix)
+        if item_data:
+            step = item_data.get('step')
+            if 'preparation' in step and id == item_data.get('id'):
+                preparation.append(item_data)
+            if 'cooking' in step and id == item_data.get('id'):
+                cooking.append(item_data)
 
-        selected_plating = random.choice(plating) if plating else None
-        print(f"selected_plating: {selected_plating}")  
+    print(f"preparation: {preparation}")
+    print(f"cooking: {cooking}")
+    
+    selected_ingredients = random.choice(ingredients) if ingredients else None
+    print(f"selected_ingredients: {selected_ingredients}")
+    if selected_ingredients:
+        print
 
-        preparation_url = get_url(selected_preparation)
-        cooking_url = get_url(selected_cooking)
-        plating_url = get_url(selected_plating)
-        ingredients_url = get_url(selected_ingredients)
+    selected_preparation = random.choice(preparation) if preparation else None
+    print(f"selected_preparation: {selected_preparation}")
+        
+    selected_cooking = random.choice(cooking) if cooking else None
+    print(f"selected_cooking: {selected_cooking}")
 
-        # Ingredients - video
-        # Preparation - image
-        # Cooking- image
-        # Plating - video
-        urls = [ingredients_url, preparation_url, cooking_url, plating_url]
-        print(f"urls: {urls}")
+    selected_plating = random.choice(plating) if plating else None
+    print(f"selected_plating: {selected_plating}")  
+
+    preparation_url = get_url(selected_preparation)
+    cooking_url = get_url(selected_cooking)
+    plating_url = get_url(selected_plating)
+    ingredients_url = get_url(selected_ingredients)
+
+    # Ingredients - video
+    # Preparation - image
+    # Cooking- image
+    # Plating - video
+    urls = [ingredients_url, preparation_url, cooking_url, plating_url]
+    print(f"urls: {urls}")
 
     explaination = explain_food_recommendation(persona, selected_episode, qa_pairs, food_data)
     print(f"explaination: {explaination}")
