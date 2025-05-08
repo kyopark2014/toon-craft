@@ -40,7 +40,7 @@ viewer = """
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>이미지와 비디오 갤러리</title>
+    <title>Image and Video Gallery</title>
     <style>
         body {{
             background-color: #F0F0F0;
@@ -119,7 +119,7 @@ viewer = """
             border: 2px solid #000;
             box-shadow: 4px 4px 0 #000;
         }}
-        /* 스크롤바 스타일링 */
+        /* Scrollbar styling */
         .text-content::-webkit-scrollbar {{
             width: 8px;
         }}
@@ -133,7 +133,7 @@ viewer = """
         .text-content::-webkit-scrollbar-thumb:hover {{
             background: #555;
         }}
-        /* 기존 스크롤 애니메이션 제거 */
+        /* Remove existing scroll animation */
         @keyframes scrollText {{
             0% {{
                 transform: none;
@@ -165,13 +165,13 @@ viewer = """
     <div class="gallery">
         <video class="gallery-item" controls loop autoplay muted>
             <source src="{url1}" type="video/mp4">
-            브라우저가 비디오를 지원하지 않습니다.
+            Your browser does not support video.
         </video>
-        <img class="gallery-item" src="{url2}" alt="조리 이미지">
-        <img class="gallery-item" src="{url3}" alt="플레이팅 이미지">
+        <img class="gallery-item" src="{url2}" alt="Cooking image">
+        <img class="gallery-item" src="{url3}" alt="Plating image">
         <video class="gallery-item" controls loop autoplay muted>
             <source src="{url4}" type="video/mp4">
-            브라우저가 비디오를 지원하지 않습니다.
+            Your browser does not support video.
         </video>
     </div>
     <div class="text-content">
@@ -209,11 +209,11 @@ def extract_txt_block(text):
     return ""
 
 def deserialize_dynamodb_item(item):
-    """DynamoDB 항목을 파이썬 딕셔너리로 변환"""
+    """Convert DynamoDB item to Python dictionary"""
     return {k: TypeDeserializer().deserialize(v) for k, v in item.items()}
 
 def get_image_url(path):
-    """이미지 경로를 CloudFront URL로 변환"""
+    """Convert image path to CloudFront URL"""
     return f"{CF_DOMAIN}/{path}"
 
 def vector_search(vector, k: int = 3):
@@ -308,7 +308,7 @@ def parse_object_name(object_name, prefix):
     #               0       1      2   3        4    5    6       7
     #objectName = "328_Dried_Radish_Green_Set_Meal_1_ingredients_1_20250417.png"
 
-    # .png 확장자 제거
+    # Remove .png extension
     if object_name.endswith('.png') or object_name.endswith('.mp4'):
         name = object_name[:-4]
         #print(f"name: {name}")
@@ -361,7 +361,7 @@ def parse_object_name(object_name, prefix):
         step = parts[pos-3]+'_'+parts[pos-2]
         #print(f"step: {step}")
         
-        # 분리된 부분을 매핑
+        # Map separated parts
         data = {
             'id': id,
             'step_image_id': step_image_id,
@@ -381,7 +381,7 @@ def get_url(selected_data):
     if selected_data:
         s3_uri = selected_data.get('s3_uri')
 
-        # s3_uri에서 확장자 추출
+        # Extract extension from s3_uri
         ext = s3_uri.split('.')[-1] if s3_uri else None
         print(f"ext: {ext}")
 
@@ -408,25 +408,25 @@ def get_url(selected_data):
         #return None
 
 def explain_food_recommendation(persona, selected_episode, qa_pairs, food_data):
-    """음식 추천에 대한 설명을 생성합니다."""
-    PROMPT = f"""당신은 나의 상황과 감정을 이해하고 음식을 추천하는 공감적인 AI 음식 큐레이터입니다.
+    """Generate explanation for food recommendation."""
+    PROMPT = f"""You are an empathetic AI food curator who understands my situation and emotions to recommend food.
 
-    ### 입력 데이터:
-    나의 프로필: {persona}
-    선택한 에피소드: {selected_episode}
-    질문과 응답: {qa_pairs}
-    추천된 음식: {food_data.get('menu', '')}
-    식당 이름: {food_data.get('name', '')}
-    식당 음식의 허영만 선생님 의견: {food_data.get('review', '')}
+    ### Input Data:
+    My Profile: {persona}
+    Selected Episode: {selected_episode}
+    Questions and Answers: {qa_pairs}
+    Recommended Food: {food_data.get('menu', '')}
+    Restaurant Name: {food_data.get('name', '')}
+    Chef Heo Young-man's Opinion: {food_data.get('review', '')}
 
-    ### 당신의 임무:
-    1. 추천된 음식이 나의 현재 상황과 어떻게 잘 맞는지 설명하세요.
-    2. 이 음식이 나의 기분이나 컨디션을 어떻게 개선할 수 있는지 설명하세요.
-    3. 허영만 선생님의 리뷰를 참조하여 음식의 특징과 매력적인 점을 설명하세요.
-    4. 공감적이고 따뜻한 톤으로 설명하되, 이모지를 적절히 활용하여 친근하게 작성하세요.
+    ### Your Task:
+    1. Explain how the recommended food matches my current situation.
+    2. Explain how this food can improve my mood or condition.
+    3. Explain the characteristics and appealing points of the food with reference to Chef Heo's review.
+    4. Write in an empathetic and warm tone, using appropriate emojis to make it friendly.
 
-    ### 출력:
-    나의 상황에 맞춘 음식 추천 설명을 작성하세요.
+    ### Output:
+    Write a food recommendation explanation tailored to my situation.
     """
 
     claude = BedrockClaude(region='us-east-1', modelId=BedrockModel.SONNET_3_7_CR)
@@ -486,16 +486,16 @@ def lambda_handler(event, context):
     qa_pairs = event.get('qa_pairs', '')
 
     # recommend = """
-    # #### 오늘의 당신은?
-    # - **현재 감정**: 성취감, 열정, 기쁨
-    # - **상황**: 동료들과의 토론에서 아이디어가 채택되어 성공적인 순간을 경험함
-    # #### 추천 음식
+    # #### Today's You
+    # - **Current Emotion**: Sense of achievement, passion, joy
+    # - **Situation**: Experienced a successful moment when your idea was adopted in a discussion with colleagues
+    # #### Recommended Food
     # ```txt
-    # 과학적 호기심과 예술적 감성이 공존하는 당신에게, 성취의 기쁨을 더욱 풍성하게 해줄 색감이 화려하고 다양한 맛의 조화가 돋보이는 한식 요리
+    # A Korean dish with vibrant colors and harmonious flavors that will enrich your sense of achievement, perfect for someone with both scientific curiosity and artistic sensibility
     # ```
-    # #### 추천 이유
-    # 오늘 당신은 마치 완벽한 커피 한 잔처럼 균형 잡힌 하루를 보내셨군요! 과학 기술에 대한 열정과 예술적 감성을 모두 갖춘 당신의 아이디어가 빛을 발한 특별한 날이니, 그 성취감을 더욱 풍성하게 해줄 음식이 필요합니다.
-    # 마치 다양한 커피를 음미하듯 여러 맛이 조화롭게 어우러진 한식이 어떨까요? 색감이 화려한 음식은 당신의 예술적 감성을 만족시키고, 다채로운 맛의 조합은 과학적 호기심을 자극할 거예요. 성공의 짜릿함을 입안 가득 느끼며, 오늘의 기쁨을 더욱 특별하게 기념해보세요. 당신의 빛나는 아이디어처럼, 오늘 저녁도 빛나길 바랍니다!
+    # #### Reason for Recommendation
+    # Today, you've had a perfectly balanced day like a perfect cup of coffee! It's a special day when your idea, combining both passion for science and technology and artistic sensibility, shone brightly. You need food that will make that sense of achievement even more fulfilling.
+    # How about a Korean dish with harmonious flavors, just like savoring different types of coffee? The vibrant colors will satisfy your artistic sensibility, and the diverse flavor combinations will stimulate your scientific curiosity. Feel the thrill of success in your mouth, and make today's joy even more special. May your evening shine as brightly as your brilliant idea!
     # """
 
     search_keyword = extract_txt_block(recommend)
@@ -517,8 +517,8 @@ def lambda_handler(event, context):
 
     # {
     #    "img_key":"contents/762/review_illust_food.png",
-    #    "review":"1인당 25,000원을 투자하면 통영의 바다를 통째로 맛볼 수 있는 제철 해산물과 술이 만나는 곳. 메뉴는 따로 없고 주인이 제철에 맞춰 싱싱한 해산물을 그때그때 준비해 내준다. 클래스가 다르다. 계속 나오는 음식. 메인과 엑스트라가 따로 없다. 얘기 나누다가 싸우면 화해하기 위해 또 와야 하는 사랑방이다. 통영의 진면목이다.",
-    #    "name":"물레야소주방",
+    #    "review":"For 25,000 won per person, you can taste the entire sea of Tongyeong where fresh seasonal seafood meets alcohol. There's no menu, and the owner prepares fresh seafood according to the season. It's in a different class. The food keeps coming. There's no distinction between main and extra. It's a living room where you have to come back to make up if you fight while talking. It's the true face of Tongyeong.",
+    #    "name":"Mulle Yasoobang",
     #    "id":"762"
     # }
 
@@ -531,20 +531,20 @@ def lambda_handler(event, context):
         print(f"response: {response}")
         
         if 'Item' in response:
-            # 식당 정보
+            # Restaurant information
             item = deserialize_dynamodb_item(response['Item'])
-            print(f"식당 정보: {item}")
+            print(f"Restaurant information: {item}")
 
             # food_data['menu'] = item.get('menu', [])
 
-            # 음식 사진
+            # Food photos
             url2 = get_image_url(item.get('media', {}).get('photos')[2])
-            print(f"음식 사진2: {url2}")
+            print(f"Food photo 2: {url2}")
             url3 = get_image_url(item.get('media', {}).get('photos')[3])
-            print(f"음식 사진3: {url3}")
+            print(f"Food photo 3: {url3}")
 
     except Exception as e:
-        print(f"데이터를 불러오는 중 오류가 발생했습니다: {e}")    
+        print(f"Error occurred while loading data: {e}")    
 
     item_data = {}
     ingredients = [] 
@@ -626,7 +626,7 @@ def lambda_handler(event, context):
     
     html = generate_html(urls[0], urls[1], urls[2], urls[3], explaination)
     print(f"html: {html}")
-    # S3에 HTML 파일 업로드
+    # Upload HTML file to S3
     s3_client = boto3.client('s3')
     try:
         s3_client.put_object(
@@ -635,18 +635,18 @@ def lambda_handler(event, context):
             Body=html,
             ContentType='text/html'
         )
-        print("HTML 파일이 성공적으로 업로드되었습니다.")
+        print("HTML file successfully uploaded.")
     except Exception as e:
-        print(f"HTML 파일 업로드 중 오류 발생: {e}")
+        print(f"Error occurred while uploading HTML file: {e}")
 
     # Update DynamoDB with the recommendation data
     id = user_id
     episode = selected_episode
     media_list = [
-        {"S": urls[0]},  # ingredients 비디오
-        {"S": urls[1]},  # preparation 이미지
-        {"S": urls[2]},  # cooking 이미지
-        {"S": urls[3]}   # plating 비디오
+        {"S": urls[0]},  # ingredients video
+        {"S": urls[1]},  # preparation image
+        {"S": urls[2]},  # cooking image
+        {"S": urls[3]}   # plating video
     ]
     persona = persona
     questions = [
@@ -684,10 +684,10 @@ def lambda_handler(event, context):
     )
     print(f"result: {result}")
 
-    # custom-page.lambda lambda 호출
+    # Invoke custom-page lambda function
     lambda_client = boto3.client('lambda')
     result = lambda_client.invoke(
-        FunctionName='custom-page.lambda',
+        FunctionName='custom-page',
         InvocationType='Event',
         Payload=json.dumps({
             "id": id,
