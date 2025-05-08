@@ -149,26 +149,26 @@ def parse_object_name(object_name, prefix):
     # .png 확장자 제거
     if object_name.endswith('.png') or object_name.endswith('.mp4'):
         name = object_name[:-4]
-        print(f"name: {name}")
+        #print(f"name: {name}")
 
         parts = name.split('_')
-        print(f"parts: {parts}")
+        #print(f"parts: {parts}")
     
         pos = len(parts)-1
         for i in range(len(parts)):
-            print(f"parts[{i}]: {parts[i]}")
+            #print(f"parts[{i}]: {parts[i]}")
             if parts[i].startswith('2025'):
-                print(f"parts[i]: {parts[i]}")
+                #print(f"parts[i]: {parts[i]}")
                 pos = i
                 break
-        print(f"pos: {pos}")
+        #print(f"pos: {pos}")
         # id
         id = parts[0] 
-        print(f"id: {id}")
+        #print(f"id: {id}")
         
         # step_image_id
         step_image_id = parts[pos-3]+'_'+parts[pos-2]+'_'+parts[pos-1] 
-        print(f"step_image_id: {step_image_id}")
+        #print(f"step_image_id: {step_image_id}")
             
         # create_at
         timestr = ""
@@ -176,28 +176,28 @@ def parse_object_name(object_name, prefix):
             timestr = parts[pos]
         else:
             timestr = parts[pos]+'_'+parts[pos+1]
-        print(f"timestr: {timestr}")
+        #print(f"timestr: {timestr}")
         create_at = convert_timestr_to_datetime(timestr)
-        print(f"create_at: {create_at}")
+        #print(f"create_at: {create_at}")
         
         # image_index
         image_index = parts[pos-3]
-        print(f"image_index: {image_index}")
+        #print(f"image_index: {image_index}")
         
         # menu
         menu = ""
         for i in range(1, pos-3):
             # print(f"parts[i]: {parts[i]}")
             menu += parts[i]+' '
-        print(f"menu: {menu}")
+        #print(f"menu: {menu}")
         
         # s3_uri    
         s3_uri = f's3://{image_bucket_name}/{prefix}'+object_name
-        print(f"s3_uri: {s3_uri}")
+        #print(f"s3_uri: {s3_uri}")
         
         # step
         step = parts[pos-3]+'_'+parts[pos-2]
-        print(f"step: {step}")
+        #print(f"step: {step}")
         
         # 분리된 부분을 매핑
         data = {
@@ -215,30 +215,35 @@ def parse_object_name(object_name, prefix):
         return None
 
 def get_url(selected_data):
-    s3_uri = selected_data.get('s3_uri')
+    print(f"selected_data: {selected_data}")
+    if selected_data:
+        s3_uri = selected_data.get('s3_uri')
 
-    # s3_uri에서 확장자 추출
-    ext = s3_uri.split('.')[-1] if s3_uri else None
-    print(f"ext: {ext}")
+        # s3_uri에서 확장자 추출
+        ext = s3_uri.split('.')[-1] if s3_uri else None
+        print(f"ext: {ext}")
 
-    if ext == 'mp4':
-        prefix = "s3://"+video_bucket_name+"/"
-        last = s3_uri.replace(prefix, '')
-        prefix = "s3://"+image_bucket_name+"/"
-        last = s3_uri.replace(prefix, '')
-        print(f"last: {last}")
-        
-        url = video_cf + '/' + last
-        print(f"url: {url}")
+        if ext == 'mp4':
+            prefix = "s3://"+video_bucket_name+"/"
+            last = s3_uri.replace(prefix, '')
+            prefix = "s3://"+image_bucket_name+"/"
+            last = s3_uri.replace(prefix, '')
+            print(f"last: {last}")
+            
+            url = video_cf + '/' + last
+            print(f"url: {url}")
+        else:
+            prefix = "s3://"+image_bucket_name+"/"
+            last = s3_uri.replace(prefix, '')
+            print(f"last: {last}")
+            
+            url = image_cf + '/' + last
+            print(f"url: {url}")
+            
+        return url
     else:
-        prefix = "s3://"+image_bucket_name+"/"
-        last = s3_uri.replace(prefix, '')
-        print(f"last: {last}")
-        
-        url = image_cf + '/' + last
-        print(f"url: {url}")
-        
-    return url
+        raise Exception("selected_data is None")
+        #return None
 
 def explain_food_recommendation(persona, selected_episode, qa_pairs, food_data):
     """음식 추천에 대한 설명을 생성합니다."""
