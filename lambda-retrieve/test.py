@@ -228,15 +228,16 @@ def vector_search(vector, k: int = 3):
     return res['hits']['hits']
 
 recommend = """
-#### Today's you?
-- **Current emotion**: Achievement, enthusiasm, joy
-- **Situation**: Experiencing a successful moment after participating in a discussion with colleagues about a new idea that was accepted
-#### Recommended food
+#### 오늘의 당신은?
+- **현재 감정**: 성취감, 열정, 기쁨
+- **상황**: 동료들과의 토론에서 아이디어가 채택되어 성공적인 순간을 경험함
+#### 추천 음식
 ```txt
-A dish that combines scientific curiosity and artistic sensibility, suitable for you who have both
+과학적 호기심과 예술적 감성이 공존하는 당신에게, 성취의 기쁨을 더욱 풍성하게 해줄 색감이 화려하고 다양한 맛의 조화가 돋보이는 한식 요리
 ```
-#### Why recommend this
-You must have felt the success of today! You have both enthusiasm for science and artistic sensibility, so you need a dish that can further enhance your achievement. How about a dish that harmonizes various flavors and colors, which can satisfy your artistic sensibility and stimulate your scientific curiosity? Let's celebrate today's joy even more!
+#### 추천 이유
+오늘 당신은 마치 완벽한 커피 한 잔처럼 균형 잡힌 하루를 보내셨군요! 과학 기술에 대한 열정과 예술적 감성을 모두 갖춘 당신의 아이디어가 빛을 발한 특별한 날이니, 그 성취감을 더욱 풍성하게 해줄 음식이 필요합니다.
+마치 다양한 커피를 음미하듯 여러 맛이 조화롭게 어우러진 한식이 어떨까요? 색감이 화려한 음식은 당신의 예술적 감성을 만족시키고, 다채로운 맛의 조합은 과학적 호기심을 자극할 거예요. 성공의 짜릿함을 입안 가득 느끼며, 오늘의 기쁨을 더욱 특별하게 기념해보세요. 당신의 빛나는 아이디어처럼, 오늘 저녁도 빛나길 바랍니다!
 """
 print(f"recommend: {recommend}")
 
@@ -459,22 +460,22 @@ def explain_food_recommendation(persona, selected_episode, qa_pairs, food_data):
     """음식 추천에 대한 설명을 생성합니다."""
     PROMPT = f"""당신은 나의 상황과 감정을 이해하고 음식을 추천하는 공감적인 AI 음식 큐레이터입니다.
 
-    ### Input data:
-    My profile: {persona}
-    Selected episode: {selected_episode}
-    Questions and answers: {qa_pairs}
-    Recommended food: {food_data.get('menu', '')}
-    Restaurant name: {food_data.get('name', '')}
-    Hyeongman Seon's opinion on the restaurant's food: {food_data.get('review', '')}
+    ### 입력 데이터:
+    나의 프로필: {persona}
+    선택한 에피소드: {selected_episode}
+    질문과 응답: {qa_pairs}
+    추천된 음식: {food_data.get('menu', '')}
+    식당 이름: {food_data.get('name', '')}
+    식당 음식의 허영만 선생님 의견: {food_data.get('review', '')}
 
-    ### Your mission:
-    1. Explain how this food matches your current situation.
-    2. Explain how this food can improve your mood or condition.
-    3. Based on Hyeongman Seon's review, explain the features and attractive points of the food.
-    4. Explain in a warm and empathetic tone, using appropriate emojis to make it friendly.
+    ### 당신의 임무:
+    1. 추천된 음식이 나의 현재 상황과 어떻게 잘 맞는지 설명하세요.
+    2. 이 음식이 나의 기분이나 컨디션을 어떻게 개선할 수 있는지 설명하세요.
+    3. 허영만 선생님의 리뷰를 참조하여 음식의 특징과 매력적인 점을 설명하세요.
+    4. 공감적이고 따뜻한 톤으로 설명하되, 이모지를 적절히 활용하여 친근하게 작성하세요.
 
-    ### Output:
-    Please write an explanation of food recommendation tailored to your situation.
+    ### 출력:
+    나의 상황에 맞춘 음식 추천 설명을 작성하세요.
     """
 
     claude = BedrockClaude(region='us-east-1', modelId=BedrockModel.SONNET_3_7_CR)
@@ -558,20 +559,20 @@ ingredients_url = get_url(selected_ingredients)
 urls = [ingredients_url, preparation_url, cooking_url, plating_url]
 print(f"urls: {urls}")
 
-persona = "This person is in their late 30s and appears to be male. They wear glasses and have an intellectual image, and it seems they have a cheerful and lively personality. They may have a job related to academic fields."
-selected_episode = "On a day when they were discussing a new idea with colleagues while drinking coffee, they had a heated discussion about the idea. He explained his idea and was enthusiastic about it, and eventually his idea was accepted.",
+persona = "이 인물은 30대 후반의 남성으로 보입니다. 안경을 쓰고 있어 지적인 이미지를 가지고 있으며, 웃는 표정으로 보아 친근하고 쾌활한 성격을 가지고 있는 것으로 보입니다. 아마도 학문적인 분야에서 일하는 직업을 가지고 있을 것 같습니다."
+selected_episode = "어느 날 동료들과 함께 커피를 마시던 중, 새로운 아이디어에 대해 열띤 토론을 벌였습니다. 그는 자신의 아이디어를 설명하며 열정적으로 손짓을 하였고, 결국 그의 아이디어가 채택되었습니다. :짠:",
 qa_pairs = [
    {
-      "question":"When thinking about the discussion with colleagues about the idea you liked the most, what was it?",
-      "answer": "Science and technology related topics"
+      "question":"이번에 동료들과 함께 열띬로 토론한 아이디어에 대해 생각해 보았을 때, 당신이 가장 좋아하는 토론 주제는 무엇인가요?",
+      "answer": "과학 기술 관련 주제"
    },
    {
-      "question":"When discussing the idea with colleagues and being enthusiastic about it, what activity do you like to express your thoughts?",
-      "answer": "Expressing thoughts through artistic expressions, for example, drawing or music"
+      "question":"동료들과 아이디어를 토론하며 열정적으로 손짓을 하던 모습을 보고, 당신은 어떤 활동을 통해 자신의 생각을 표현하는 것을 좋아하나요?",
+      "answer": "예술적인 표현을 통해 자신의 생각을 전달하는 것, 예를 들어 그림이나 음악"
    },
    {
-      "question":"What is the person most likely to enjoy as a hobby? Please choose one from below.",
-      "answer": "Drinking various drinks at a coffee shop"
+      "question":"이 인물이 취미 활동으로 가장 즐기는 것은 무엇인가요? 아래 중 하나를 선택해 주세요.",
+      "answer": "커피숍에서 다양한 음료를 시음하기"
    }
 ]
 
@@ -605,13 +606,13 @@ except Exception as e:
 
 
 id = id
-episode = selected_episode
+episode = selected_episode[0] if isinstance(selected_episode, tuple) else selected_episode
 
 media_list = [
-    {"S": urls[0]},  # ingredients video
-    {"S": urls[1]},  # preparation image
-    {"S": urls[2]},  # cooking image
-    {"S": urls[3]}   # plating video
+    {"S": urls[0]},  # ingredients 비디오
+    {"S": urls[1]},  # preparation 이미지
+    {"S": urls[2]},  # cooking 이미지
+    {"S": urls[3]}   # plating 비디오
 ]
 persona = persona
 
@@ -699,24 +700,8 @@ result = update_recommendation_to_dynamodb(
 )
 print(f"result: {result}")
 
-# Invoke custom-page lambda function
-lambda_client = boto3.client('lambda')
-result = lambda_client.invoke(
-    FunctionName='custom-page.lambda',
-    InvocationType='Event',
-    Payload=json.dumps({
-        "id": id,
-        "episode": episode,
-        "media_list": media_list,
-        "persona": persona,
-        "questions": questions,
-        "recommend": recommend,
-        "recommend_id": recommend_id,
-        "result": explaination
-    })
-)
-print(f"result: {result}")
-    
+
+
 
 
 
