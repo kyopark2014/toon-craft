@@ -558,7 +558,7 @@ def lambda_handler(event, context):
     for video in video_list:
         #print(f"image: {image}")
         video = video.replace(video_prefix, '')
-        print(f"video: {video}")
+        # print(f"video: {video}")
             
         item_data = parse_object_name(video, video_prefix)    
         if item_data:    
