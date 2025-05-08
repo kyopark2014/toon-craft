@@ -431,7 +431,12 @@ def parse_object_name(object_name, prefix):
         return None
 
 def get_url(selected_data):
+    if selected_data is None:
+        return ""
+        
     s3_uri = selected_data.get('s3_uri')
+    if not s3_uri:
+        return ""
 
     # s3_uri에서 확장자 추출
     ext = s3_uri.split('.')[-1] if s3_uri else None
