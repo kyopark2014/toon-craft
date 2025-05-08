@@ -25,7 +25,7 @@ viewer = """
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>이미지와 비디오 갤러리</title>
     <style>
-        body {
+        body {{
             background-color: #F0F0F0;
             background-image: url('https://d2w79zoxq32d33.cloudfront.net/html/background.jpg');
             background-size: cover;
@@ -33,8 +33,8 @@ viewer = """
             background-repeat: no-repeat;
             min-height: 100vh;
             margin: 0;
-        }
-        .gallery {
+        }}
+        .gallery {{
             display: grid;
             grid-template-columns: repeat(2, 1fr);
             gap: 0;
@@ -43,8 +43,8 @@ viewer = """
             margin: 0;
             height: calc(100vh - 300px);
             align-items: center;
-        }
-        .gallery-item {
+        }}
+        .gallery-item {{
             width: 100%;
             height: calc((100vh - 300px) / 2);
             object-fit: cover;
@@ -55,8 +55,8 @@ viewer = """
             position: relative;
             overflow: hidden;
             margin: 4px;
-        }
-        .gallery-item::before {
+        }}
+        .gallery-item::before {{
             content: '';
             position: absolute;
             top: -4px;
@@ -66,8 +66,8 @@ viewer = """
             border: 2px solid #000;
             z-index: 1;
             pointer-events: none;
-        }
-        .gallery-item::after {
+        }}
+        .gallery-item::after {{
             content: '';
             position: absolute;
             top: 4px;
@@ -77,11 +77,11 @@ viewer = """
             border: 2px solid #000;
             z-index: 1;
             pointer-events: none;
-        }
-        .gallery-item:hover {
+        }}
+        .gallery-item:hover {{
             transform: scale(1.02);
-        }
-        .gallery-item video {
+        }}
+        .gallery-item video {{
             width: 100%;
             height: 100%;
             object-fit: cover;
@@ -89,8 +89,8 @@ viewer = """
             top: 0;
             left: 0;
             transform: none;
-        }
-        .text-content {
+        }}
+        .text-content {{
             position: relative;
             background-color: rgba(255, 255, 255, 0.9);
             padding: 20px;
@@ -101,47 +101,47 @@ viewer = """
             overflow-y: auto;
             border: 2px solid #000;
             box-shadow: 4px 4px 0 #000;
-        }
+        }}
         /* 스크롤바 스타일링 */
-        .text-content::-webkit-scrollbar {
+        .text-content::-webkit-scrollbar {{
             width: 8px;
-        }
-        .text-content::-webkit-scrollbar-track {
+        }}
+        .text-content::-webkit-scrollbar-track {{
             background: #F1F1F1;
-        }
-        .text-content::-webkit-scrollbar-thumb {
+        }}
+        .text-content::-webkit-scrollbar-thumb {{
             background: #888;
             border-radius: 4px;
-        }
-        .text-content::-webkit-scrollbar-thumb:hover {
+        }}
+        .text-content::-webkit-scrollbar-thumb:hover {{
             background: #555;
-        }
+        }}
         /* 기존 스크롤 애니메이션 제거 */
-        @keyframes scrollText {
-            0% {
+        @keyframes scrollText {{
+            0% {{
                 transform: none;
-            }
-            100% {
+            }}
+            100% {{
                 transform: none;
-            }
-        }
-        .text-content:hover {
+            }}
+        }}
+        .text-content:hover {{
             animation-play-state: paused;
-        }
-        .text-content h4 {
+        }}
+        .text-content h4 {{
             margin: 0 0 10px 0;
             color: #333;
-        }
-        .text-content ul {
+        }}
+        .text-content ul {{
             margin: 0;
             padding-left: 20px;
-        }
-        .text-content pre {
+        }}
+        .text-content pre {{
             background-color: #F5F5F5;
             padding: 10px;
             border-radius: 5px;
             margin: 10px 0;
-        }
+        }}
     </style>
 </head>
 <body>
