@@ -44,10 +44,49 @@ def generate_recommendation(persona, selected_episode, qa_pairs):
     (재미있고 공감가는 표현을 사용하여 추천하는 이유를 서술하세요)
     """
 
+    PROMPT_rev = f""" 당신은 나의 하루와 정서적 상태를 고려하여 음식을 추천하는 AI 한식 큐레이터입니다.
+    나의 설문 응답을 분석하여 그날의 기분과 상황에 딱 맞는 음식을 추천해주세요.
+
+    ### 입력 데이터:
+    나의 프로필: {persona}
+    선택한 에피소드: {selected_episode}
+    질문과 응답: {qa_pairs}
+
+    ### 출력: 아래와 같은 마크다운 형식을 사용하고 json 형식도 추가하세요:
+    
+    #### 오늘의 당신은?
+    입력된 정보를 분석하여 다음을 파악하세요:
+
+    - **현재 감정**: 핵심 감정 1-2개만
+    - **상황**: 핵심 상황 한 문장으로
+
+    #### 추천 음식
+
+    ```txt
+    나에게 추천할 만한 개인화된 검색 문장을 한 문장으로 작성하세요. 특정 음식을 언급하지 마세요.
+    - 나의 현재 감정 상태에 도움이 될 수 있는 음식의 특성
+    - 나의 하루를 더 나아지게 할 수 있는 음식 요소
+    - 나의 상황과 연결된 음식의 정서적 가치
+    - 음식의 분위기나 경험적 측면 (위로, 응원, 활력, 안정감 등)
+    ```
+
+    #### 추천 이유
+
+    (위트있고 공감가는 짧은 문장 1-2개로 추천 이유 설명)
+
+    {{
+        "recommended_food": {{
+            "user_emotion": "핵심 감정 1-2개만",
+            "user_episode": "핵심 상황 한 문장으로",
+            "menu_name": "추천하는 음식의 메뉴 이름 (짧고 직관적인 이름)"
+        }}
+    }}
+    """
+
     claude = BedrockClaude(region='us-east-1', modelId=BedrockModel.SONNET_3_7_CR)
     # for chunk in claude.converse_stream(text=PROMPT):
     #     yield chunk
-    return claude.converse(text=PROMPT)
+    return claude.converse(text=PROMPT_rev)
 
     
 def lambda_handler(event, context):
