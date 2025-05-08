@@ -378,6 +378,13 @@ def parse_object_name(object_name, prefix):
 
 def get_url(selected_data):
     print(f"selected_data: {selected_data}")
+    if selected_data is None:
+        return ""
+        
+    s3_uri = selected_data.get('s3_uri')
+    if not s3_uri:
+        return ""
+        
     if selected_data:
         s3_uri = selected_data.get('s3_uri')
 
