@@ -23,6 +23,7 @@
             margin: 0;
             height: calc(100vh - 300px);
             align-items: center;
+            position: relative;
         }
         .gallery-item {
             width: 100%;
@@ -71,15 +72,18 @@
             transform: none;
         }
         .text-content {
-            position: relative;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
             background-color: rgba(255, 255, 255, 0.9);
             padding: 20px;
             font-family: 'Noto Sans KR', sans-serif;
             line-height: 1.6;
-            margin-top: 20px;
             max-height: 300px;
             overflow: hidden;
             animation: scrollText 20s linear infinite;
+            z-index: 10;
         }
 
         @keyframes scrollText {

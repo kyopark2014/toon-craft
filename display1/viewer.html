@@ -77,17 +77,37 @@
             font-family: 'Noto Sans KR', sans-serif;
             line-height: 1.6;
             margin-top: 20px;
-            max-height: 300px;
-            overflow: hidden;
-            animation: scrollText 20s linear infinite;
+            height: 300px;
+            overflow-y: auto;
+            border: 2px solid #000;
+            box-shadow: 4px 4px 0 #000;
         }
 
+        /* 스크롤바 스타일링 */
+        .text-content::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .text-content::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        .text-content::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 4px;
+        }
+
+        .text-content::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+
+        /* 기존 스크롤 애니메이션 제거 */
         @keyframes scrollText {
             0% {
-                transform: translateY(100%);
+                transform: none;
             }
             100% {
-                transform: translateY(-100%);
+                transform: none;
             }
         }
 
@@ -113,11 +133,14 @@
 </head>
 <body>
     <div class="gallery">
-        <img class="gallery-item" src="https://d2w79zoxq32d33.cloudfront.net/familiar-15-menus/120_Braised_Hairtail_Fish_1_ingredients_3_20250414_215105.png" alt="재료 이미지">
-        <img class="gallery-item" src="https://d2w79zoxq32d33.cloudfront.net/familiar-15-menus/120_Braised_Hairtail_Fish_3_cooking_1_20250414_215307.png" alt="조리 이미지">
-        <img class="gallery-item" src="https://d2w79zoxq32d33.cloudfront.net/familiar-15-menus/120_Braised_Hairtail_Fish_4_plating_1_20250414_215405.png" alt="플레이팅 이미지">
         <video class="gallery-item" controls loop autoplay muted>
-            <source src="https://d3dybxg1g4fwkj.cloudfront.net/single/familiar-15-menus/120_Braised_Hairtail_Fish_3_cooking_4_20250414_215309.png/ptpebwlbstrd/output.mp4" type="video/mp4">
+            <source src="https://d3dybxg1g4fwkj.cloudfront.net/multi_shot_automated_2/120_Doenjang_Jjigae_1_ingredients_5_20250414_202423_20250506_114301/dygsdxd00vro/shot_0004.mp4" type="video/mp4">
+            브라우저가 비디오를 지원하지 않습니다.
+        </video>
+        <img class="gallery-item" src="https://d2w79zoxq32d33.cloudfront.net/familiar-15-menus2/120_Doenjang_Jjigae_2_preparation_4_20250414_202518.png" alt="조리 이미지">
+        <img class="gallery-item" src="https://d2w79zoxq32d33.cloudfront.net/familiar-15-menus2/120_Doenjang_Jjigae_3_cooking_4_20250414_202623.png" alt="플레이팅 이미지">
+        <video class="gallery-item" controls loop autoplay muted>
+            <source src="https://d3dybxg1g4fwkj.cloudfront.net/multi_shot_automated_2/120_Doenjang_Jjigae_4_plating_3_20250414_202723_20250506_115350/qpnyuhqrjhwh/shot_0002.mp4" type="video/mp4">
             브라우저가 비디오를 지원하지 않습니다.
         </video>
     </div>
