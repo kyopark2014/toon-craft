@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>이미지와 비디오 갤러리</title>
+    <style>
+        body {
+            background-color: #f0f0f0;
+            background-image: url('https://d2w79zoxq32d33.cloudfront.net/html/background.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            min-height: 100vh;
+            margin: 0;
+        }
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+            height: 100vh;
+            align-items: center;
+        }
+        .gallery-item {
+            width: 100%;
+            height: calc((100vh - 60px) / 2);
+            object-fit: contain;
+            border: 4px solid #333;
+            box-shadow: 5px 5px 0 #000;
+            transition: transform 0.3s ease;
+            background-color: #fff;
+            position: relative;
+            overflow: hidden;
+        }
+        .gallery-item:hover {
+            transform: scale(1.02);
+        }
+        .gallery-item video {
+            width: auto;
+            height: 100%;
+            object-fit: cover;
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+    </style>
+</head>
+<body>
+    <div class="gallery">
+        <img class="gallery-item" src="https://d2w79zoxq32d33.cloudfront.net/familiar-15-menus/120_Braised_Hairtail_Fish_1_ingredients_3_20250414_215105.png" alt="재료 이미지">
+        <img class="gallery-item" src="https://d2w79zoxq32d33.cloudfront.net/familiar-15-menus/120_Braised_Hairtail_Fish_3_cooking_1_20250414_215307.png" alt="조리 이미지">
+        <img class="gallery-item" src="https://d2w79zoxq32d33.cloudfront.net/familiar-15-menus/120_Braised_Hairtail_Fish_4_plating_1_20250414_215405.png" alt="플레이팅 이미지">
+        <video class="gallery-item" controls loop autoplay muted>
+            <source src="https://d3dybxg1g4fwkj.cloudfront.net/single/familiar-15-menus/120_Braised_Hairtail_Fish_3_cooking_4_20250414_215309.png/ptpebwlbstrd/output.mp4" type="video/mp4">
+            브라우저가 비디오를 지원하지 않습니다.
+        </video>
+    </div>
+</body>
+</html>

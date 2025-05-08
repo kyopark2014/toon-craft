@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>이미지와 비디오 갤러리</title>
+    <style>
+        body {
+            background-color: #f0f0f0;
+            background-image: url('https://d2w79zoxq32d33.cloudfront.net/html/background.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            min-height: 100vh;
+            margin: 0;
+        }
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0;
+            padding: 0;
+            max-width: 100%;
+            margin: 0;
+            height: calc(100vh - 300px);
+            align-items: center;
+        }
+        .gallery-item {
+            width: 100%;
+            height: calc((100vh - 300px) / 2);
+            object-fit: cover;
+            border: 8px solid #000;
+            box-shadow: 8px 8px 0 #000;
+            transition: transform 0.3s ease;
+            background-color: #fff;
+            position: relative;
+            overflow: hidden;
+            margin: 4px;
+        }
+        .gallery-item::before {
+            content: '';
+            position: absolute;
+            top: -4px;
+            left: -4px;
+            right: -4px;
+            bottom: -4px;
+            border: 2px solid #000;
+            z-index: 1;
+            pointer-events: none;
+        }
+        .gallery-item::after {
+            content: '';
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            right: 4px;
+            bottom: 4px;
+            border: 2px solid #000;
+            z-index: 1;
+            pointer-events: none;
+        }
+        .gallery-item:hover {
+            transform: scale(1.02);
+        }
+        .gallery-item video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            position: absolute;
+            top: 0;
+            left: 0;
+            transform: none;
+        }
+        .text-content {
+            position: relative;
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 20px;
+            font-family: 'Noto Sans KR', sans-serif;
+            line-height: 1.6;
+            margin-top: 20px;
+            max-height: 300px;
+            overflow: hidden;
+            animation: scrollText 20s linear infinite;
+        }
+
+        @keyframes scrollText {
+            0% {
+                transform: translateY(100%);
+            }
+            100% {
+                transform: translateY(-100%);
+            }
+        }
+
+        .text-content:hover {
+            animation-play-state: paused;
+        }
+
+        .text-content h4 {
+            margin: 0 0 10px 0;
+            color: #333;
+        }
+        .text-content ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+        .text-content pre {
+            background-color: #f5f5f5;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="gallery">
+        <img class="gallery-item" src="https://d2w79zoxq32d33.cloudfront.net/familiar-15-menus/120_Braised_Hairtail_Fish_1_ingredients_3_20250414_215105.png" alt="재료 이미지">
+        <img class="gallery-item" src="https://d2w79zoxq32d33.cloudfront.net/familiar-15-menus/120_Braised_Hairtail_Fish_3_cooking_1_20250414_215307.png" alt="조리 이미지">
+        <img class="gallery-item" src="https://d2w79zoxq32d33.cloudfront.net/familiar-15-menus/120_Braised_Hairtail_Fish_4_plating_1_20250414_215405.png" alt="플레이팅 이미지">
+        <video class="gallery-item" controls loop autoplay muted>
+            <source src="https://d3dybxg1g4fwkj.cloudfront.net/single/familiar-15-menus/120_Braised_Hairtail_Fish_3_cooking_4_20250414_215309.png/ptpebwlbstrd/output.mp4" type="video/mp4">
+            브라우저가 비디오를 지원하지 않습니다.
+        </video>
+    </div>
+    <div class="text-content">
+        <h4>오늘의 당신은?</h4>
+        <ul>
+            <li><strong>현재 감정</strong>: 성취감, 열정, 기쁨</li>
+            <li><strong>상황</strong>: 동료들과의 토론에서 아이디어가 채택되어 성공적인 순간을 경험함</li>
+        </ul>
+        <h4>추천 음식</h4>
+        <pre>과학적 호기심과 예술적 감성이 공존하는 당신에게, 성취의 기쁨을 더욱 풍성하게 해줄 색감이 화려하고 다양한 맛의 조화가 돋보이는 한식 요리</pre>
+        <h4>추천 이유</h4>
+        <p>오늘 당신은 마치 완벽한 커피 한 잔처럼 균형 잡힌 하루를 보내셨군요! 과학 기술에 대한 열정과 예술적 감성을 모두 갖춘 당신의 아이디어가 빛을 발한 특별한 날이니,</p>
+    </div>
+</body>
+</html>

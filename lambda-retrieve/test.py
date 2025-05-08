@@ -81,6 +81,13 @@ recommend = """
 오늘 당신은 마치 완벽한 커피 한 잔처럼 균형 잡힌 하루를 보내셨군요! 과학 기술에 대한 열정과 예술적 감성을 모두 갖춘 당신의 아이디어가 빛을 발한 특별한 날이니, 그 성취감을 더욱 풍성하게 해줄 음식이 필요합니다.
 마치 다양한 커피를 음미하듯 여러 맛이 조화롭게 어우러진 한식이 어떨까요? 색감이 화려한 음식은 당신의 예술적 감성을 만족시키고, 다채로운 맛의 조합은 과학적 호기심을 자극할 거예요. 성공의 짜릿함을 입안 가득 느끼며, 오늘의 기쁨을 더욱 특별하게 기념해보세요. 당신의 빛나는 아이디어처럼, 오늘 저녁도 빛나길 바랍니다!
 """
+print(f"recommend: {recommend}")
+
+request = {
+    "user_id": "1234567890",
+    "recommend": recommend
+}
+print(f"request: {request}")
 
 search_keyword = extract_txt_block(recommend)
 
@@ -122,10 +129,10 @@ try:
         # food_data['menu'] = item.get('menu', [])
 
         # 음식 사진
-        url2 = get_image_url(item.get('media', {}).get('photos')[2])
-        print(f"음식 사진2: {url2}")
-        url3 = get_image_url(item.get('media', {}).get('photos')[3])
-        print(f"음식 사진3: {url3}")
+        # url2 = get_image_url(item.get('media', {}).get('photos')[2])
+        # print(f"음식 사진2: {url2}")
+        # url3 = get_image_url(item.get('media', {}).get('photos')[3])
+        # print(f"음식 사진3: {url3}")
 
 except Exception as e:
     print(f"데이터를 불러오는 중 오류가 발생했습니다: {e}")
