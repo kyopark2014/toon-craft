@@ -386,8 +386,6 @@ def lambda_handler(event, context):
     
     selected_ingredients = random.choice(ingredients) if ingredients else None
     print(f"selected_ingredients: {selected_ingredients}")
-    if selected_ingredients:
-        print
 
     selected_preparation = random.choice(preparation) if preparation else None
     print(f"selected_preparation: {selected_preparation}")
