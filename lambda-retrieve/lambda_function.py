@@ -530,6 +530,7 @@ def lambda_handler(event, context):
     # }
     id = food_data.get('id', '')
     print(f"id: {id}")
+    id = "120"
 
     item = ""
     try:
