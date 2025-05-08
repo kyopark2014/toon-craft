@@ -137,6 +137,155 @@ try:
 except Exception as e:
     print(f"데이터를 불러오는 중 오류가 발생했습니다: {e}")
 
+video_bucket_name = 'tooncraft-videos-v2'
+bucket_name = 'toon-craft-gen-imgs-v2'
+prefix = 'familiar-15-menus2/'
+
+def get_s3_image_list(bucket_name, prefix):
+    """
+    Function to retrieve and return a list of objects from the toon-craft-gen-imgs/familiar-15-menus bucket
+    """
+    # Create S3 client
+    s3_client = boto3.client('s3')
+      
+    try:
+        # Get list of objects from S3 bucket
+        response = s3_client.list_objects_v2(
+            Bucket=bucket_name,
+            Prefix=prefix
+        )
+        
+        # Extract object key list
+        image_list = []
+        if 'Contents' in response:
+            for obj in response['Contents']:
+                key = obj['Key']
+                if key != prefix:  # Exclude the prefix folder itself
+                    image_list.append(key)
+        
+        # Print results
+        print("Image list:")
+        for image in image_list:
+            print(f"- {image}")
+            
+        return image_list
+        
+    except Exception as e:
+        print(f"Error occurred: {str(e)}")
+        return []
+
+from datetime import datetime
+
+def convert_timestr_to_datetime(timestr):
+    """
+    Convert timestr in format '20250417' or '20250414_202423' to datetime object
+    
+    Args:
+        timestr (str): String in format 'YYYYMMDD' or 'YYYYMMDD_HHMMSS'
+        
+    Returns:
+        datetime: Converted datetime object
+    """
+    if '_' in timestr:
+        # Format: YYYYMMDD_HHMMSS
+        date_part, time_part = timestr.split('_')
+        year = int(date_part[:4])
+        month = int(date_part[4:6])
+        day = int(date_part[6:8])
+        hour = int(time_part[:2])
+        minute = int(time_part[2:4])
+        second = int(time_part[4:6])
+        return datetime(year, month, day, hour, minute, second)
+    else:
+        # Format: YYYYMMDD
+        year = int(timestr[:4])
+        month = int(timestr[4:6])
+        day = int(timestr[6:8])
+        return datetime(year, month, day)
+
+def parse_object_name(object_name):
+    #objectName = "120_Doenjang_Jjigae_1_ingredients_5_20250414_202423.png"
+    #               0       1      2   3        4    5    6       7
+    #objectName = "328_Dried_Radish_Green_Set_Meal_1_ingredients_1_20250417.png"
+
+    # .png 확장자 제거
+    if object_name.endswith('.png'):
+        name = object_name[:-4]
+    print(f"name: {name}")
+
+    parts = name.split('_')
+    print(f"parts: {parts}")
+    
+    pos = len(parts)-1
+    for i in range(len(parts)):
+        print(f"parts[{i}]: {parts[i]}")
+        if parts[i].startswith('2025'):
+            print(f"parts[i]: {parts[i]}")
+            pos = i
+            break
+    print(f"pos: {pos}")
+    # id
+    id = parts[0] 
+    print(f"id: {id}")
+    
+    # step_image_id
+    step_image_id = parts[pos-3]+'_'+parts[pos-2]+'_'+parts[pos-1] 
+    print(f"step_image_id: {step_image_id}")
+        
+    # create_at
+    timestr = ""
+    if pos == len(parts)-1:
+        timestr = parts[pos]
+    else:
+        timestr = parts[pos]+'_'+parts[pos+1]
+    print(f"timestr: {timestr}")
+    create_at = convert_timestr_to_datetime(timestr)
+    print(f"create_at: {create_at}")
+    
+    # image_index
+    image_index = parts[pos-3]
+    print(f"image_index: {image_index}")
+    
+    # menu
+    menu = ""
+    for i in range(1, pos-3):
+        # print(f"parts[i]: {parts[i]}")
+        menu += parts[i]+' '
+    print(f"menu: {menu}")
+    
+    # s3_uri    
+    s3_uri = f's3://{bucket_name}/{prefix}'+object_name
+    print(f"s3_uri: {s3_uri}")
+    
+    # step
+    step = parts[pos-3]+'_'+parts[pos-2]
+    print(f"step: {step}")
+        
+    # 분리된 부분을 매핑
+    data = {
+        'id': id,
+        'step_image_id': step_image_id,
+        'create_at': str(create_at),
+        'image_index': image_index,
+        'menu': menu[:len(menu)-1],
+        's3_uri': s3_uri,
+        'step': step
+    }
+    
+    return data
+
+image_list = get_s3_image_list(bucket_name, prefix)
+print(f"image_list: {image_list}")
+
+item_data = {}
+for image in image_list:
+    #print(f"image: {image}")
+    image = image.replace(prefix, '')
+    print(f"image: {image}")
+    item_data = parse_object_name(image)
+
+print(f"item_data: {item_data}")
+
 result = {
     "img_key": food_data.get('img_key', ''),
     "review": food_data.get('review', ''),
