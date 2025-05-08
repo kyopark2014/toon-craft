@@ -705,7 +705,7 @@ print(f"result: {result}")
 # Invoke custom-page lambda function
 lambda_client = boto3.client('lambda')
 result = lambda_client.invoke(
-    FunctionName='custom-page.lambda',
+    FunctionName='custom-page',
     InvocationType='Event',
     Payload=json.dumps({
         "id": id,
