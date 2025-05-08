@@ -84,5 +84,18 @@ export class CdkToonCraftStack extends cdk.Stack {
       environment: {
       }
     });
+
+    const lambdaHistory = new lambda.DockerImageFunction(this, `lambda-history-for-${projectName}`, {
+      description: "history api of toon-craft",
+      functionName: "toons-craft-history",
+      code: lambda.DockerImageCode.fromImageAsset(
+        path.join(__dirname, "../../lambda-history")
+      ),
+      timeout: cdk.Duration.seconds(180),
+      role: roleLambdaTools,
+      environment: {
+
+      },
+    });
   }
 }
