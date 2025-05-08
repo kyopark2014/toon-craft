@@ -308,6 +308,34 @@ def get_url(selected_data):
         
     return url
 
+def explain_food_recommendation(persona, selected_episode, qa_pairs, food_data):
+    """음식 추천에 대한 설명을 생성합니다."""
+    PROMPT = f"""당신은 나의 상황과 감정을 이해하고 음식을 추천하는 공감적인 AI 음식 큐레이터입니다.
+
+    ### 입력 데이터:
+    나의 프로필: {persona}
+    선택한 에피소드: {selected_episode}
+    질문과 응답: {qa_pairs}
+    추천된 음식: {food_data.get('menu', '')}
+    식당 이름: {food_data.get('name', '')}
+    식당 음식의 허영만 선생님 의견: {food_data.get('review', '')}
+
+    ### 당신의 임무:
+    1. 추천된 음식이 나의 현재 상황과 어떻게 잘 맞는지 설명하세요.
+    2. 이 음식이 나의 기분이나 컨디션을 어떻게 개선할 수 있는지 설명하세요.
+    3. 허영만 선생님의 리뷰를 참조하여 음식의 특징과 매력적인 점을 설명하세요.
+    4. 공감적이고 따뜻한 톤으로 설명하되, 이모지를 적절히 활용하여 친근하게 작성하세요.
+
+    ### 출력:
+    나의 상황에 맞춘 음식 추천 설명을 작성하세요.
+    """
+
+    claude = BedrockClaude(region='us-east-1', modelId=BedrockModel.SONNET_3_7_CR)
+    # for chunk in claude.converse_stream(text=PROMPT):
+    #     yield chunk
+    return claude.converse(text=PROMPT)
+
+
 image_list = get_s3_list(image_bucket_name, prefix=image_prefix)
 print(f"image_list: {image_list}")
 
@@ -383,13 +411,32 @@ ingredients_url = get_url(selected_ingredients)
 urls = [ingredients_url, preparation_url, cooking_url, plating_url]
 print(f"urls: {urls}")
 
-result = {
+persona = "이 인물은 30대 후반의 남성으로 보입니다. 안경을 쓰고 있어 지적인 이미지를 가지고 있으며, 웃는 표정으로 보아 친근하고 쾌활한 성격을 가지고 있는 것으로 보입니다. 아마도 학문적인 분야에서 일하는 직업을 가지고 있을 것 같습니다."
+selected_episode = "어느 날 동료들과 함께 커피를 마시던 중, 새로운 아이디어에 대해 열띤 토론을 벌였습니다. 그는 자신의 아이디어를 설명하며 열정적으로 손짓을 하였고, 결국 그의 아이디어가 채택되었습니다. :짠:",
+qa_pairs = [
+   {
+      "question":"이번에 동료들과 함께 열띬로 토론한 아이디어에 대해 생각해 보았을 때, 당신이 가장 좋아하는 토론 주제는 무엇인가요?",
+      "answer": "과학 기술 관련 주제"
+   },
+   {
+      "question":"동료들과 아이디어를 토론하며 열정적으로 손짓을 하던 모습을 보고, 당신은 어떤 활동을 통해 자신의 생각을 표현하는 것을 좋아하나요?",
+      "answer": "예술적인 표현을 통해 자신의 생각을 전달하는 것, 예를 들어 그림이나 음악"
+   },
+   {
+      "question":"이 인물이 취미 활동으로 가장 즐기는 것은 무엇인가요? 아래 중 하나를 선택해 주세요.",
+      "answer": "커피숍에서 다양한 음료를 시음하기"
+   }
+]
+
+explaination = explain_food_recommendation(persona, selected_episode, qa_pairs, food_data)
+print(f"explaination: {explaination}")
+info = {
     "img_key": food_data.get('img_key', ''),
     "review": food_data.get('review', ''),
     "name": food_data.get('name', ''),
     "id": food_data.get('id', ''),
     "item": item,
-    "url2": url2,
-    "url3": url3
+    "urls": json.dumps(urls, ensure_ascii=False),
+    "explaination": explaination
 }    
-print(f"result: {result}")
+print(f"info: {info}")

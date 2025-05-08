@@ -1,6 +1,8 @@
 import boto3
 import json
 import re
+import random
+
 from genai_kit.aws.amazon_image import BedrockAmazonImage, ImageParams, NovaImageSize
 from genai_kit.aws.bedrock import BedrockModel
 from genai_kit.aws.claude import BedrockClaude
@@ -16,6 +18,14 @@ dynamodb = boto3.client(
     'dynamodb',
     region_name=REGION_NAME,
 )
+
+image_bucket_name = 'toon-craft-gen-imgs-v2'
+video_bucket_name = 'tooncraft-videos-v2'
+image_prefix = 'familiar-15-menus2/'
+video_prefix = 'multi_shot_automated_2/'
+
+image_cf = 'https://d2w79zoxq32d33.cloudfront.net'
+video_cf = 'https://d3dybxg1g4fwkj.cloudfront.net'
 
 embedding_client = BedrockEmbedding()
 
@@ -69,9 +79,201 @@ def vector_search(vector, k: int = 3):
         )
     return res['hits']['hits']
 
+def get_s3_list(bucket_name, prefix):
+    """
+    Function to retrieve and return a list of objects from the toon-craft-gen-imgs/familiar-15-menus bucket
+    """
+    # Create S3 client
+    s3_client = boto3.client('s3')
+      
+    try:
+        # Get list of objects from S3 bucket
+        response = s3_client.list_objects_v2(
+            Bucket=bucket_name,
+            Prefix=prefix
+        )
+        
+        # Extract object key list
+        image_list = []
+        if 'Contents' in response:
+            for obj in response['Contents']:
+                key = obj['Key']
+                if key != prefix:  # Exclude the prefix folder itself
+                    image_list.append(key)
+        
+        # Print results
+        print("Image list:")
+        for image in image_list:
+            print(f"- {image}")
+            
+        return image_list
+        
+    except Exception as e:
+        print(f"Error occurred: {str(e)}")
+        return []
+
+from datetime import datetime
+
+def convert_timestr_to_datetime(timestr):
+    """
+    Convert timestr in format '20250417' or '20250414_202423' to datetime object
+    
+    Args:
+        timestr (str): String in format 'YYYYMMDD' or 'YYYYMMDD_HHMMSS'
+        
+    Returns:
+        datetime: Converted datetime object
+    """
+    if '_' in timestr:
+        # Format: YYYYMMDD_HHMMSS
+        date_part, time_part = timestr.split('_')
+        year = int(date_part[:4])
+        month = int(date_part[4:6])
+        day = int(date_part[6:8])
+        hour = int(time_part[:2])
+        minute = int(time_part[2:4])
+        second = int(time_part[4:6])
+        return datetime(year, month, day, hour, minute, second)
+    else:
+        # Format: YYYYMMDD
+        year = int(timestr[:4])
+        month = int(timestr[4:6])
+        day = int(timestr[6:8])
+        return datetime(year, month, day)
+
+def parse_object_name(object_name, prefix):
+    #objectName = "120_Doenjang_Jjigae_1_ingredients_5_20250414_202423.png"
+    #               0       1      2   3        4    5    6       7
+    #objectName = "328_Dried_Radish_Green_Set_Meal_1_ingredients_1_20250417.png"
+
+    # .png 확장자 제거
+    if object_name.endswith('.png') or object_name.endswith('.mp4'):
+        name = object_name[:-4]
+        print(f"name: {name}")
+
+        parts = name.split('_')
+        print(f"parts: {parts}")
+    
+        pos = len(parts)-1
+        for i in range(len(parts)):
+            print(f"parts[{i}]: {parts[i]}")
+            if parts[i].startswith('2025'):
+                print(f"parts[i]: {parts[i]}")
+                pos = i
+                break
+        print(f"pos: {pos}")
+        # id
+        id = parts[0] 
+        print(f"id: {id}")
+        
+        # step_image_id
+        step_image_id = parts[pos-3]+'_'+parts[pos-2]+'_'+parts[pos-1] 
+        print(f"step_image_id: {step_image_id}")
+            
+        # create_at
+        timestr = ""
+        if pos == len(parts)-1:
+            timestr = parts[pos]
+        else:
+            timestr = parts[pos]+'_'+parts[pos+1]
+        print(f"timestr: {timestr}")
+        create_at = convert_timestr_to_datetime(timestr)
+        print(f"create_at: {create_at}")
+        
+        # image_index
+        image_index = parts[pos-3]
+        print(f"image_index: {image_index}")
+        
+        # menu
+        menu = ""
+        for i in range(1, pos-3):
+            # print(f"parts[i]: {parts[i]}")
+            menu += parts[i]+' '
+        print(f"menu: {menu}")
+        
+        # s3_uri    
+        s3_uri = f's3://{image_bucket_name}/{prefix}'+object_name
+        print(f"s3_uri: {s3_uri}")
+        
+        # step
+        step = parts[pos-3]+'_'+parts[pos-2]
+        print(f"step: {step}")
+        
+        # 분리된 부분을 매핑
+        data = {
+            'id': id,
+            'step_image_id': step_image_id,
+            'create_at': str(create_at),
+            'image_index': image_index,
+            'menu': menu[:len(menu)-1],
+            's3_uri': s3_uri,
+            'step': step
+        }
+    
+        return data
+    else:
+        return None
+
+def get_url(selected_data):
+    s3_uri = selected_data.get('s3_uri')
+
+    # s3_uri에서 확장자 추출
+    ext = s3_uri.split('.')[-1] if s3_uri else None
+    print(f"ext: {ext}")
+
+    if ext == 'mp4':
+        prefix = "s3://"+video_bucket_name+"/"
+        last = s3_uri.replace(prefix, '')
+        prefix = "s3://"+image_bucket_name+"/"
+        last = s3_uri.replace(prefix, '')
+        print(f"last: {last}")
+        
+        url = video_cf + '/' + last
+        print(f"url: {url}")
+    else:
+        prefix = "s3://"+image_bucket_name+"/"
+        last = s3_uri.replace(prefix, '')
+        print(f"last: {last}")
+        
+        url = image_cf + '/' + last
+        print(f"url: {url}")
+        
+    return url
+
+def explain_food_recommendation(persona, selected_episode, qa_pairs, food_data):
+    """음식 추천에 대한 설명을 생성합니다."""
+    PROMPT = f"""당신은 나의 상황과 감정을 이해하고 음식을 추천하는 공감적인 AI 음식 큐레이터입니다.
+
+    ### 입력 데이터:
+    나의 프로필: {persona}
+    선택한 에피소드: {selected_episode}
+    질문과 응답: {qa_pairs}
+    추천된 음식: {food_data.get('menu', '')}
+    식당 이름: {food_data.get('name', '')}
+    식당 음식의 허영만 선생님 의견: {food_data.get('review', '')}
+
+    ### 당신의 임무:
+    1. 추천된 음식이 나의 현재 상황과 어떻게 잘 맞는지 설명하세요.
+    2. 이 음식이 나의 기분이나 컨디션을 어떻게 개선할 수 있는지 설명하세요.
+    3. 허영만 선생님의 리뷰를 참조하여 음식의 특징과 매력적인 점을 설명하세요.
+    4. 공감적이고 따뜻한 톤으로 설명하되, 이모지를 적절히 활용하여 친근하게 작성하세요.
+
+    ### 출력:
+    나의 상황에 맞춘 음식 추천 설명을 작성하세요.
+    """
+
+    claude = BedrockClaude(region='us-east-1', modelId=BedrockModel.SONNET_3_7_CR)
+    # for chunk in claude.converse_stream(text=PROMPT):
+    #     yield chunk
+    return claude.converse(text=PROMPT)
+
 def lambda_handler(event, context):
     user_id = event.get('user_id', '')
     recommend = event.get('recommend', '')
+    persona = event.get('persona', '')
+    selected_episode = event.get('selected_episode', '')
+    qa_pairs = event.get('qa_pairs', '')
+
     # recommend = """
     # #### 오늘의 당신은?
     # - **현재 감정**: 성취감, 열정, 기쁨
@@ -133,17 +335,87 @@ def lambda_handler(event, context):
     except Exception as e:
         print(f"데이터를 불러오는 중 오류가 발생했습니다: {e}")
 
+    image_list = get_s3_list(image_bucket_name, prefix=image_prefix)
+    print(f"image_list: {image_list}")
+
+    video_list = get_s3_list(video_bucket_name, prefix=video_prefix)
+    print(f"video_list: {video_list}")
+
+    item_data = {}
+    ingredients = [] 
+    preparation = []
+    cooking = []
+    plating = []
+    id = "120"
+
+    for video in video_list:
+        #print(f"image: {image}")
+        video = video.replace(video_prefix, '')
+        print(f"video: {video}")
+            
+        item_data = parse_object_name(video, video_prefix)    
+        if item_data:    
+            step = item_data.get('step')
+            if 'ingredients' in step and id == item_data.get('id'):
+                ingredients.append(item_data)
+            if 'plating' in step and id == item_data.get('id'):
+                plating.append(item_data)
+            
+        print(f"ingredients: {ingredients}")
+        print(f"plating: {plating}")
+
+        for image in image_list:
+            #print(f"image: {image}")
+            image = image.replace(image_prefix, '')
+            print(f"image: {image}")
+                
+            item_data = parse_object_name(image, image_prefix)
+            if item_data:
+                step = item_data.get('step')
+                if 'preparation' in step and id == item_data.get('id'):
+                    preparation.append(item_data)
+                if 'cooking' in step and id == item_data.get('id'):
+                    cooking.append(item_data)
+
+        print(f"preparation: {preparation}")
+        print(f"cooking: {cooking}")
+        
+        selected_ingredients = random.choice(ingredients) if ingredients else None
+        print(f"selected_ingredients: {selected_ingredients}")
+
+        selected_preparation = random.choice(preparation) if preparation else None
+        print(f"selected_preparation: {selected_preparation}")
+            
+        selected_cooking = random.choice(cooking) if cooking else None
+        print(f"selected_cooking: {selected_cooking}")
+
+        selected_plating = random.choice(plating) if plating else None
+        print(f"selected_plating: {selected_plating}")  
+
+        preparation_url = get_url(selected_preparation)
+        cooking_url = get_url(selected_cooking)
+        plating_url = get_url(selected_plating)
+        ingredients_url = get_url(selected_ingredients)
+
+        # Ingredients - video
+        # Preparation - image
+        # Cooking- image
+        # Plating - video
+        urls = [ingredients_url, preparation_url, cooking_url, plating_url]
+        print(f"urls: {urls}")
+
+    explaination = explain_food_recommendation(persona, selected_episode, qa_pairs, food_data)
+    print(f"explaination: {explaination}")
     info = {
         "img_key": food_data.get('img_key', ''),
         "review": food_data.get('review', ''),
         "name": food_data.get('name', ''),
         "id": food_data.get('id', ''),
         "item": item,
-        "url2": url2,
-        "url3": url3
+        "urls": json.dumps(urls, ensure_ascii=False),
+        "explaination": explaination
     }    
     print(f"info: {info}")
-    
     
     result = {
         "user_id": user_id,
