@@ -493,7 +493,7 @@ def update_recommendation_to_dynamodb(id, episode, media_list, persona, question
             'questions': {'L': questions},  # List type
             'recommend': {'S': recommend},
             'recommend_id': {'S': recommend_id},
-            'result': {'M': json.loads(result) if isinstance(result, str) else result}
+            'result': {'S': result}
         }
         
         # Put item into DynamoDB
@@ -718,7 +718,7 @@ def lambda_handler(event, context):
         questions=questions,
         recommend=recommend,
         recommend_id=recommend_id,
-        result=explaination_obj['recommendation_result']
+        result=json.dumps(explaination_obj, ensure_ascii=False)
     )
     print(f"result: {result}")
 
