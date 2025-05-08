@@ -551,7 +551,7 @@ def lambda_handler(event, context):
     preparation = []
     cooking = []
     plating = []
-    id = "120"
+    id = user_id
 
     for video in video_list:
         #print(f"image: {image}")
@@ -640,7 +640,7 @@ def lambda_handler(event, context):
         print(f"HTML 파일 업로드 중 오류 발생: {e}")
 
     # Update DynamoDB with the recommendation data
-    id = id
+    id = user_id
     episode = selected_episode
     media_list = [
         {"S": urls[0]},  # ingredients 비디오
@@ -671,7 +671,6 @@ def lambda_handler(event, context):
     ]
     recommend = recommend
     recommend_id = id
-    result = explaination
 
     result = update_recommendation_to_dynamodb(
         id=id,
@@ -681,7 +680,25 @@ def lambda_handler(event, context):
         questions=questions,
         recommend=recommend,
         recommend_id=recommend_id,
-        result=result
+        result=explaination
+    )
+    print(f"result: {result}")
+
+    # custom-page.lambda lambda 호출
+    lambda_client = boto3.client('lambda')
+    result = lambda_client.invoke(
+        FunctionName='custom-page.lambda',
+        InvocationType='Event',
+        Payload=json.dumps({
+            "id": id,
+            "episode": episode,
+            "media_list": media_list,
+            "persona": persona,
+            "questions": questions,
+            "recommend": recommend,
+            "recommend_id": recommend_id,
+            "result": explaination
+        })
     )
     print(f"result: {result}")
     
