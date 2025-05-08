@@ -639,18 +639,31 @@ def lambda_handler(event, context):
 
     explaination = explain_food_recommendation(persona, selected_episode, qa_pairs, food_data)
     print(f"explaination: {explaination}")
+    # Parse the explanation string into a JSON object
+    explaination_obj = json.loads(explaination)
+    
     info = {
         "img_key": food_data.get('img_key', ''),
         "review": food_data.get('review', ''),
         "name": food_data.get('name', ''),
         "id": food_data.get('id', ''),
         "item": item,
-        "urls": json.dumps(urls, ensure_ascii=False),
-        "explaination": explaination
+        "urls": urls,
+        "explaination": explaination_obj
     }    
     print(f"info: {info}")
     
-    html = generate_html(urls[0], urls[1], urls[2], urls[3], explaination)
+    # Create formatted HTML content from the explanation object
+    recommendation = explaination_obj.get('recommendation_result', {})
+    html_content = f"""
+        <h2>{recommendation.get('title', '')}</h2>
+        <p>{recommendation.get('description', '')}</p>
+        <h3>추천 이유</h3>
+        <p>1. {recommendation.get('reason_1', '')}</p>
+        <p>2. {recommendation.get('reason_2', '')}</p>
+        <p>3. {recommendation.get('reason_3', '')}</p>
+    """
+    html = generate_html(urls[0], urls[1], urls[2], urls[3], html_content)
     print(f"html: {html}")
     # Upload HTML file to S3
     s3_client = boto3.client('s3')
@@ -705,7 +718,7 @@ def lambda_handler(event, context):
         questions=questions,
         recommend=recommend,
         recommend_id=recommend_id,
-        result=explaination
+        result=json.dumps(explaination_obj, ensure_ascii=False)
     )
     print(f"result: {result}")
 
@@ -722,17 +735,15 @@ def lambda_handler(event, context):
             "questions": questions,
             "recommend": recommend,
             "recommend_id": recommend_id,
-            "result": explaination
+            "result": explaination_obj
         }, ensure_ascii=False)
     )
     print(f"result: {result}")
     
-    result = {
-        "user_id": user_id,
-        "info": info
-    }
-
     return {
         'statusCode': 200,
-        'body': json.dumps(result, ensure_ascii=False)
+        'body': {
+            "user_id": user_id,
+            "info": info
+        }
     }
