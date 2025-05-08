@@ -497,7 +497,9 @@ ingredients = []
 preparation = []
 cooking = []
 plating = []
-id = "120"
+
+id = food_data.get('id', '')
+print(f"id: {id}")
 
 for video in video_list:
     #print(f"image: {image}")
@@ -605,7 +607,6 @@ except Exception as e:
     print(f"HTML 파일 업로드 중 오류 발생: {e}")
 
 
-id = id
 episode = selected_episode[0] if isinstance(selected_episode, tuple) else selected_episode
 
 media_list = [

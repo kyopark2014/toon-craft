@@ -521,12 +521,14 @@ def lambda_handler(event, context):
     #    "name":"Mulle Yasoobang",
     #    "id":"762"
     # }
+    id = food_data.get('id', '')
+    print(f"id: {id}")
 
     item = ""
     try:
         response = dynamodb.get_item(
             TableName=DYNAMO_TABLE,
-            Key={'id': {'S': food_data.get('id', '')}}
+            Key={'id': {'S': id}}
         )
         print(f"response: {response}")
         
@@ -537,12 +539,6 @@ def lambda_handler(event, context):
 
             # food_data['menu'] = item.get('menu', [])
 
-            # Food photos
-            url2 = get_image_url(item.get('media', {}).get('photos')[2])
-            print(f"Food photo 2: {url2}")
-            url3 = get_image_url(item.get('media', {}).get('photos')[3])
-            print(f"Food photo 3: {url3}")
-
     except Exception as e:
         print(f"Error occurred while loading data: {e}")    
 
@@ -551,8 +547,7 @@ def lambda_handler(event, context):
     preparation = []
     cooking = []
     plating = []
-    id = user_id
-
+    
     for video in video_list:
         #print(f"image: {image}")
         video = video.replace(video_prefix, '')
@@ -640,7 +635,6 @@ def lambda_handler(event, context):
         print(f"Error occurred while uploading HTML file: {e}")
 
     # Update DynamoDB with the recommendation data
-    id = user_id
     episode = selected_episode
     media_list = [
         {"S": urls[0]},  # ingredients video
@@ -673,7 +667,7 @@ def lambda_handler(event, context):
     recommend_id = id
 
     result = update_recommendation_to_dynamodb(
-        id=id,
+        id=user_id,
         episode=episode,
         media_list=media_list,
         persona=persona,
@@ -690,7 +684,7 @@ def lambda_handler(event, context):
         FunctionName='custom-page',
         InvocationType='Event',
         Payload=json.dumps({
-            "id": id,
+            "id": user_id,
             "episode": episode,
             "media_list": media_list,
             "persona": persona,
