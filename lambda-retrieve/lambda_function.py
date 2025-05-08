@@ -370,9 +370,8 @@ def lambda_handler(event, context):
         print(f"plating: {plating}")
 
         for image in image_list:
-            #print(f"image: {image}")
             image = image.replace(image_prefix, '')
-            print(f"image: {image}")
+            #print(f"image: {image}")
                 
             item_data = parse_object_name(image, image_prefix)
             if item_data:
