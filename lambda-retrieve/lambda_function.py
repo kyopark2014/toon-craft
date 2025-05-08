@@ -437,10 +437,33 @@ def explain_food_recommendation(persona, selected_episode, qa_pairs, food_data):
     Write a food recommendation explanation tailored to my situation.
     """
 
+    PROMPT_rev = f"""당신은 나의 상황과 감정을 이해하고 음식을 추천하는 위트 있는 AI 큐레이터입니다.
+
+    ### 입력 데이터:
+    나의 프로필: {persona}
+    선택한 에피소드: {selected_episode}
+    질문과 응답: {qa_pairs}
+    추천된 음식: {food_data.get('menu', '')}
+    식당 이름: {food_data.get('name', '')}
+    식당 음식의 허영만 선생님 의견: {food_data.get('review', '')}
+
+    ### 출력: 아래와 같은 json 형식을 사용하세요:
+    서문은 건너뛰고 나의 상황에 맞춘 음식 추천 설명을 작성하세요. reason_1, reason_2, reason_3은 허영만 선생님의 리뷰를 활용하세요.
+    이모지는 적절히 사용하되 과하지 않게 사용하세요.
+    {{
+        "recommendation_result": {{
+            "title": "추천 음식과 가게 이름을 포함한 캐치프레이즈 (짧고 임팩트 있는 문장)",
+            "description": "이 음식이 내 상황과 감정에 왜 딱 맞는지 설명하세요.",
+            "reason_1": "추천 이유 중 첫 번째 항목, 음식의 감성적/정서적 가치 강조",
+            "reason_2": "추천 이유 중 두 번째 항목, 음식의 재료나 조리법 등 맛과 관련된 요소 강조",
+            "reason_3": "추천 이유 중 세 번째 항목, 음식이 주는 경험적 가치나 상징성 강조"
+        }}
+    }}
+    """
     claude = BedrockClaude(region='us-east-1', modelId=BedrockModel.SONNET_3_7_CR)
     # for chunk in claude.converse_stream(text=PROMPT):
     #     yield chunk
-    return claude.converse(text=PROMPT)
+    return claude.converse(text=PROMPT_rev)
 
 # Create a function to update DynamoDB table with the recommendation data
 def update_recommendation_to_dynamodb(id, episode, media_list, persona, questions, recommend, recommend_id, result):
