@@ -34,6 +34,155 @@ default_urls = [
         "https://d3dybxg1g4fwkj.cloudfront.net/multi_shot_automated_2/120_Doenjang_Jjigae_4_plating_3_20250414_202723_20250506_115350/qpnyuhqrjhwh/shot_0002.mp4"
     ]
 
+viewer = """
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>이미지와 비디오 갤러리</title>
+    <style>
+        body {{
+            background-color: #F0F0F0;
+            background-image: url('https://d2w79zoxq32d33.cloudfront.net/html/background.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            min-height: 100vh;
+            margin: 0;
+        }}
+        .gallery {{
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0;
+            padding: 0;
+            max-width: 100%;
+            margin: 0;
+            height: calc(100vh - 300px);
+            align-items: center;
+        }}
+        .gallery-item {{
+            width: 100%;
+            height: calc((100vh - 300px) / 2);
+            object-fit: cover;
+            border: 8px solid #000;
+            box-shadow: 8px 8px 0 #000;
+            transition: transform 0.3s ease;
+            background-color: #fff;
+            position: relative;
+            overflow: hidden;
+            margin: 4px;
+        }}
+        .gallery-item::before {{
+            content: '';
+            position: absolute;
+            top: -4px;
+            left: -4px;
+            right: -4px;
+            bottom: -4px;
+            border: 2px solid #000;
+            z-index: 1;
+            pointer-events: none;
+        }}
+        .gallery-item::after {{
+            content: '';
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            right: 4px;
+            bottom: 4px;
+            border: 2px solid #000;
+            z-index: 1;
+            pointer-events: none;
+        }}
+        .gallery-item:hover {{
+            transform: scale(1.02);
+        }}
+        .gallery-item video {{
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            position: absolute;
+            top: 0;
+            left: 0;
+            transform: none;
+        }}
+        .text-content {{
+            position: relative;
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 20px;
+            font-family: 'Noto Sans KR', sans-serif;
+            line-height: 1.6;
+            margin-top: 20px;
+            height: 300px;
+            overflow-y: auto;
+            border: 2px solid #000;
+            box-shadow: 4px 4px 0 #000;
+        }}
+        /* 스크롤바 스타일링 */
+        .text-content::-webkit-scrollbar {{
+            width: 8px;
+        }}
+        .text-content::-webkit-scrollbar-track {{
+            background: #F1F1F1;
+        }}
+        .text-content::-webkit-scrollbar-thumb {{
+            background: #888;
+            border-radius: 4px;
+        }}
+        .text-content::-webkit-scrollbar-thumb:hover {{
+            background: #555;
+        }}
+        /* 기존 스크롤 애니메이션 제거 */
+        @keyframes scrollText {{
+            0% {{
+                transform: none;
+            }}
+            100% {{
+                transform: none;
+            }}
+        }}
+        .text-content:hover {{
+            animation-play-state: paused;
+        }}
+        .text-content h4 {{
+            margin: 0 0 10px 0;
+            color: #333;
+        }}
+        .text-content ul {{
+            margin: 0;
+            padding-left: 20px;
+        }}
+        .text-content pre {{
+            background-color: #F5F5F5;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }}
+    </style>
+</head>
+<body>
+    <div class="gallery">
+        <video class="gallery-item" controls loop autoplay muted>
+            <source src="{url1}" type="video/mp4">
+            브라우저가 비디오를 지원하지 않습니다.
+        </video>
+        <img class="gallery-item" src="{url2}" alt="조리 이미지">
+        <img class="gallery-item" src="{url3}" alt="플레이팅 이미지">
+        <video class="gallery-item" controls loop autoplay muted>
+            <source src="{url4}" type="video/mp4">
+            브라우저가 비디오를 지원하지 않습니다.
+        </video>
+    </div>
+    <div class="text-content">
+        {text}
+    </div>
+</body>
+</html>
+"""
+def generate_html(url1, url2, url3, url4, text):
+    return viewer.format(url1=url1, url2=url2, url3=url3, url4=url4, text=text)
+
 embedding_client = BedrockEmbedding()
 
 oss_client = OpenSearch(
@@ -430,6 +579,21 @@ def lambda_handler(event, context):
         "explaination": explaination
     }    
     print(f"info: {info}")
+    
+    html = generate_html(urls[0], urls[1], urls[2], urls[3], explaination)
+    print(f"html: {html}")
+    # S3에 HTML 파일 업로드
+    s3_client = boto3.client('s3')
+    try:
+        s3_client.put_object(
+            Bucket=image_bucket_name,
+            Key='html/viewer.html',
+            Body=html,
+            ContentType='text/html'
+        )
+        print("HTML 파일이 성공적으로 업로드되었습니다.")
+    except Exception as e:
+        print(f"HTML 파일 업로드 중 오류 발생: {e}")
     
     result = {
         "user_id": user_id,
