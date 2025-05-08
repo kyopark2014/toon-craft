@@ -27,6 +27,13 @@ video_prefix = 'multi_shot_automated_2/'
 image_cf = 'https://d2w79zoxq32d33.cloudfront.net'
 video_cf = 'https://d3dybxg1g4fwkj.cloudfront.net'
 
+default_urls = [
+        "https://d3dybxg1g4fwkj.cloudfront.net/multi_shot_automated_2/120_Doenjang_Jjigae_1_ingredients_5_20250414_202423_20250506_114301/dygsdxd00vro/shot_0004.mp4",
+        "https://d2w79zoxq32d33.cloudfront.net/familiar-15-menus2/120_Doenjang_Jjigae_2_preparation_4_20250414_202518.png",
+        "https://d2w79zoxq32d33.cloudfront.net/familiar-15-menus2/120_Doenjang_Jjigae_3_cooking_4_20250414_202623.png",
+        "https://d3dybxg1g4fwkj.cloudfront.net/multi_shot_automated_2/120_Doenjang_Jjigae_4_plating_3_20250414_202723_20250506_115350/qpnyuhqrjhwh/shot_0002.mp4"
+    ]
+
 embedding_client = BedrockEmbedding()
 
 oss_client = OpenSearch(
@@ -111,6 +118,12 @@ def get_s3_list(bucket_name, prefix):
     except Exception as e:
         print(f"Error occurred: {str(e)}")
         return []
+
+image_list = get_s3_list(image_bucket_name, prefix=image_prefix)
+print(f"image_list: {image_list}")
+
+video_list = get_s3_list(video_bucket_name, prefix=video_prefix)
+print(f"video_list: {video_list}")
 
 from datetime import datetime
 
@@ -316,7 +329,7 @@ def lambda_handler(event, context):
     #    "id":"762"
     # }
 
-    item = url2 = url3 = ""
+    item = ""
     try:
         response = dynamodb.get_item(
             TableName=DYNAMO_TABLE,
@@ -338,13 +351,7 @@ def lambda_handler(event, context):
             print(f"음식 사진3: {url3}")
 
     except Exception as e:
-        print(f"데이터를 불러오는 중 오류가 발생했습니다: {e}")
-
-    image_list = get_s3_list(image_bucket_name, prefix=image_prefix)
-    print(f"image_list: {image_list}")
-
-    video_list = get_s3_list(video_bucket_name, prefix=video_prefix)
-    print(f"video_list: {video_list}")
+        print(f"데이터를 불러오는 중 오류가 발생했습니다: {e}")    
 
     item_data = {}
     ingredients = [] 
@@ -407,6 +414,9 @@ def lambda_handler(event, context):
     # Plating - video
     urls = [ingredients_url, preparation_url, cooking_url, plating_url]
     print(f"urls: {urls}")
+
+    if ingredients_url is None or preparation_url is None or cooking_url is None or plating_url is None:
+        urls = default_urls
 
     explaination = explain_food_recommendation(persona, selected_episode, qa_pairs, food_data)
     print(f"explaination: {explaination}")
