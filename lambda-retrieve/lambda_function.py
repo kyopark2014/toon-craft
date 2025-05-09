@@ -743,6 +743,8 @@ def lambda_handler(event, context):
         recommend_id=recommend_id,
         result=json.dumps(explaination_obj, ensure_ascii=False)
     )
+    
+    print(f"device_id: {device_id}")
     print(f"result: {result}")
 
     # Invoke custom-page lambda function
