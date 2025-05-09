@@ -20,47 +20,42 @@ def extract_json(str):
         print(f"Error: {str}")
         return {}
     
-def generate_next_question(persona, selected_episode, previous_qa=None, question_number=1):
-    # Format previous Q&A information
-    previous_qa_text = ""
-    if previous_qa and len(previous_qa) > 0:
-        previous_qa_text = "이전 질문과 답변:\n"
-        for q, a in previous_qa.items():
-            previous_qa_text += f"Q: {q}\nA: {a}\n"
-    
+def generate_questions(persona, selected_episode):
     PROMPT = f"""너는 주어진 내 정보를 보고 분위기와 성격을 추론하는 감성적인 AI 스토리텔러야. 일상을 기반으로 스토리를 만들 거야.
-    주어진 페르소나와 에피소드를 보고, 나의 취향을 파악하기 위한 질문 하나를 20글자가 넘지 않는 간결한 한 문장으로 만들어주세요. 이 질문은 전체 3개 질문 중 {question_number}번째 질문입니다.
-    질문에는 3개의 옵션을 포함해야 합니다.
+    주어진 페르소나와 에피소드를 보고, 나의 취향을 파악하기 위한 질문 3개를 각각 20글자가 넘지 않는 간결한 한 문장으로 만들어주세요.
+    각 질문에는 3개의 옵션을 포함해야 합니다.
 
     주어진 나의 정보:
     - 페르소나: {persona}
     - 에피소드: {selected_episode}
-    {previous_qa_text}
     
-    {question_number}번째 질문을 생성할 때 이전 질문과 답변을 고려하여 새로운 측면의 취향을 물어보세요.
+    각 질문은 서로 다른 측면의 취향을 물어보세요.
 
     아래와 같은 json 포맷으로 답변하세요. 항상 한글로 서술하세요:
-    - question: str
-    - options: list[str]
+    - questions: list[object]
+      - question: str
+      - options: list[str]
     """
 
     claude = BedrockClaude(region='us-east-1', modelId=BedrockModel.NOVA_MICRO_CR)
     res = claude.converse(text=PROMPT)
     question_data = extract_json(res)
     
-    # Format conversion (return single question object)
-    if 'question' in question_data and 'options' in question_data:
-        return question_data
-    
-    # Handle case where previous format (questions list) is returned
+    # Handle case where questions list is returned
     if 'questions' in question_data and len(question_data['questions']) > 0:
-        return question_data['questions'][0]
+        return question_data['questions'][:3]  # Ensure we only return 3 questions
     
-    # Return default question (in case of error)
-    return {
-        'question': f"오늘 기분이 어떠세요?",
+    # Return default questions (in case of error)
+    return [{
+        'question': "오늘 기분이 어떠세요?",
         'options': ["신남", "화남", "지루함", "귀찮음"]
-    }
+    }, {
+        'question': "어떤 활동을 선호하시나요?",
+        'options': ["실내활동", "야외활동", "문화활동"]
+    }, {
+        'question': "주말에 무엇을 하고 싶으신가요?",
+        'options': ["휴식", "취미활동", "친구만남"]
+    }]
 
 def lambda_handler(event, context):
 
@@ -81,35 +76,8 @@ def lambda_handler(event, context):
     print(f"persona: {persona}")
     print(f"episode: {episode}")
     
-    generated_questions = []
     selected_episode = episode[select]
-
-    index = 0
-    max_attempts = 10
-    target_questions = 3
-
-    while len(generated_questions) < target_questions and index < max_attempts:
-        question = generate_next_question(
-            persona=persona,
-            selected_episode=selected_episode,    
-            question_number=len(generated_questions) + 1  # 현재 생성된 질문 수 + 1을 question_number로 전달
-        )
-        
-        # Check for duplicates by comparing question content
-        is_duplicate = False
-        for existing_question in generated_questions:
-            if existing_question['question'] == question['question']:
-                is_duplicate = True
-                break
-        
-        if not is_duplicate:
-            generated_questions.append(question)
-        
-        index += 1
-
-    # Verify if we got exactly 3 questions
-    if len(generated_questions) != target_questions:
-        print(f"Warning: Could not generate {target_questions} unique questions after {max_attempts} attempts")
+    generated_questions = generate_questions(persona, selected_episode)
 
     print(f"generated_questions: {generated_questions}")
     

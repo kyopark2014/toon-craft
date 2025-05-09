@@ -198,9 +198,17 @@ oss_client = OpenSearch(
 REGION_NAME = "ap-northeast-1"
 CF_DOMAIN = "https://d1z4gor1v1vm43.cloudfront.net"
 DYNAMO_TABLE = "hur-restaurants-500"
-S3_BUCKET = "hur-restaurants-500"
 S3_OUTPUT_BUCKET = "toon-craft-media"
 
+
+def extract_json(str):
+    try:
+        str = str.replace('```json', '').replace('```', '')
+        return json.loads(str)
+    except Exception as e:
+        print(f"Error: {str}")
+        return {}
+    
 def extract_txt_block(text):
     pattern = r"```txt(.*?)```"
     match = re.search(pattern, text, re.DOTALL)
@@ -461,20 +469,8 @@ def explain_food_recommendation(persona, selected_episode, qa_pairs, food_data):
     }}
     """
     claude = BedrockClaude(region='us-east-1', modelId=BedrockModel.SONNET_3_7_CR)
-    response = claude.converse(text=PROMPT_rev)
-    
-    # Extract JSON from the response if it exists
-    try:
-        # Find JSON content between curly braces
-        start = response.find('{')
-        end = response.rfind('}') + 1
-        if start != -1 and end != 0:
-            json_str = response[start:end]
-            # Parse and return only the JSON part
-            return json.dumps(json.loads(json_str), ensure_ascii=False)
-        return response
-    except:
-        return response
+    response = claude.converse(text=PROMPT_rev)    
+    return extract_json(response)
 
 # Create a function to update DynamoDB table with the recommendation data
 def update_recommendation_to_dynamodb(id, episode, media_list, persona, questions, recommend, recommend_id, result):
