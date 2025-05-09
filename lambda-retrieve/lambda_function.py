@@ -461,9 +461,20 @@ def explain_food_recommendation(persona, selected_episode, qa_pairs, food_data):
     }}
     """
     claude = BedrockClaude(region='us-east-1', modelId=BedrockModel.SONNET_3_7_CR)
-    # for chunk in claude.converse_stream(text=PROMPT):
-    #     yield chunk
-    return claude.converse(text=PROMPT_rev)
+    response = claude.converse(text=PROMPT_rev)
+    
+    # Extract JSON from the response if it exists
+    try:
+        # Find JSON content between curly braces
+        start = response.find('{')
+        end = response.rfind('}') + 1
+        if start != -1 and end != 0:
+            json_str = response[start:end]
+            # Parse and return only the JSON part
+            return json.dumps(json.loads(json_str), ensure_ascii=False)
+        return response
+    except:
+        return response
 
 # Create a function to update DynamoDB table with the recommendation data
 def update_recommendation_to_dynamodb(id, episode, media_list, persona, questions, recommend, recommend_id, result):
