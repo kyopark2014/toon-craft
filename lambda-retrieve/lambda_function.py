@@ -197,7 +197,7 @@ oss_client = OpenSearch(
 
 REGION_NAME = "ap-northeast-1"
 CF_DOMAIN = "https://d1z4gor1v1vm43.cloudfront.net"
-DYNAMO_TABLE = "hur-restaurants-500"
+DYNAMO_TABLE = "hur-resto-500"
 S3_OUTPUT_BUCKET = "toon-craft-media"
 
 
