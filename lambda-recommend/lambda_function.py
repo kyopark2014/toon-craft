@@ -44,11 +44,47 @@ def generate_recommendation(persona, selected_episode, qa_pairs):
     (재미있고 공감가는 표현을 사용하여 추천하는 이유를 서술하세요)
     """
 
+    PROMPT_rev = f"""당신은 나의 하루와 정서적 상태를 고려하여 음식을 추천하는 AI 한식 음식 큐레이터입니다.
+    나의 설문 응답을 분석하여 그날의 기분과 상황에 딱 맞는 음식을 추천하기 위한 검색 쿼리를 생성해야 합니다.
+
+    ### 입력 데이터:
+    나의 프로필: {persona}
+    선택한 에피소드: {selected_episode}
+    질문과 응답: {qa_pairs}
+
+    ### 출력: 다음 형식의 JSON으로 응답하세요:
+
+    {{
+        "user_emotion": "나의 현재 감정 상태 (기쁨, 슬픔, 스트레스, 지침, 설렘 등)를 쉼표로 구분하세요.",
+        "user_episode": "오늘 하루의 특별한 상황이나 이벤트",
+        "food_query": "나에게 추천할 만한 개인화된 검색 문장을 한 문장으로 작성하세요. 특정 음식을 언급하지 마세요.",
+        "recommend_reason": "재미있고 공감가는 표현을 사용하여 추천하는 이유를 서술하세요"
+    }}
+
+    food_query는 다음 요소를 고려하여 작성하세요:
+    - 나의 현재 감정 상태에 도움이 될 수 있는 음식의 특성
+    - 나의 하루를 더 나아지게 할 수 있는 음식 요소
+    - 나의 상황과 연결된 음식의 정서적 가치
+    - 음식의 분위기나 경험적 측면 (위로, 응원, 활력, 안정감 등)
+    """
+
     claude = BedrockClaude(region='us-east-1', modelId=BedrockModel.SONNET_3_7_CR)
     # for chunk in claude.converse_stream(text=PROMPT):
     #     yield chunk
-    return claude.converse(text=PROMPT)
-
+    response = claude.converse(text=PROMPT_rev)
+    # Extract JSON from the response if it exists
+    try:
+        # Find JSON content between curly braces
+        start = response.find('{')
+        end = response.rfind('}') + 1
+        if start != -1 and end != 0:
+            json_str = response[start:end]
+            # Parse and return only the JSON part
+            return json.dumps(json.loads(json_str), ensure_ascii=False)
+        return response
+    except:
+        return response
+    
     
 def lambda_handler(event, context):
     user_id = event['user_id']
