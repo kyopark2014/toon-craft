@@ -536,6 +536,7 @@ def lambda_handler(event, context):
     persona = event.get('persona', '')
     selected_episode = event.get('selected_episode', '')
     qa_pairs = event.get('qa_pairs', '')
+    device_id = event.get('device_id', '1')  # Default to '1' if not provided
 
     # recommend = """
     # #### Today's You
@@ -691,7 +692,7 @@ def lambda_handler(event, context):
     try:
         s3_client.put_object(
             Bucket=image_bucket_name,
-            Key='html/viewer.html',
+            Key=f'html/viewer_{device_id}.html',
             Body=html,
             ContentType='text/html'
         )
