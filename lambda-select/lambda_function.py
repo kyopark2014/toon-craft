@@ -69,6 +69,7 @@ def lambda_handler(event, context):
     print(f"event: {event}")
     
     user_id = event['user_id']
+    device_id = event.get('device_id', '1')
     persona = event['persona']  
     episode = event['episode']
     select = event['select']
@@ -83,10 +84,11 @@ def lambda_handler(event, context):
     
     result = {
         "user_id": user_id,
+        "device_id": device_id,
         "generated_questions": generated_questions
     }
 
     return {
         'statusCode': 200,
-        'body': json.dumps(result, ensure_ascii=False)
+        'body': result,
     }
