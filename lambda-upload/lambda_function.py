@@ -50,7 +50,8 @@ bucketName = "toon-craft-gen-imgs-v2"
 folderName = "upload_image"
     
 def lambda_handler(event, context):
-    user_id = event['user_id']  
+    user_id = event['user_id']
+    device_id = event.get('device_id', '1')
     image_key = event['image_key']
     
     #image_key = "ksdyb-high-res-current-photo.jpeg"
@@ -75,6 +76,7 @@ def lambda_handler(event, context):
     
     result = {
         "user_id": user_id,
+        "device_id": device_id,
         "persona": persona,
         "episode": episode
     }
