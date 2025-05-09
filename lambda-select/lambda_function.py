@@ -29,7 +29,7 @@ def generate_next_question(persona, selected_episode, previous_qa=None, question
             previous_qa_text += f"Q: {q}\nA: {a}\n"
     
     PROMPT = f"""너는 주어진 내 정보를 보고 분위기와 성격을 추론하는 감성적인 AI 스토리텔러야. 일상을 기반으로 스토리를 만들 거야.
-    주어진 페르소나와 에피소드를 보고, 나의 취향을 파악하기 위한 질문 하나를 간결한 한 문장으로 만들어주세요. 질문은 15글자를 넘지 마세요. 이 질문은 전체 3개 질문 중 {question_number}번째 질문입니다.
+    주어진 페르소나와 에피소드를 보고, 나의 취향을 파악하기 위한 질문 하나를 20글자가 넘지 않는 간결한 한 문장으로 만들어주세요. 이 질문은 전체 3개 질문 중 {question_number}번째 질문입니다.
     질문에는 3개의 옵션을 포함해야 합니다.
 
     주어진 나의 정보:
