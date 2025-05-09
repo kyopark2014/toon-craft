@@ -551,7 +551,8 @@ def lambda_handler(event, context):
     # How about a Korean dish with harmonious flavors, just like savoring different types of coffee? The vibrant colors will satisfy your artistic sensibility, and the diverse flavor combinations will stimulate your scientific curiosity. Feel the thrill of success in your mouth, and make today's joy even more special. May your evening shine as brightly as your brilliant idea!
     # """
 
-    search_keyword = extract_txt_block(recommend)
+    # search_keyword = extract_txt_block(recommend)
+    search_keyword = recommend['food_query']
 
     # Get embedding for user input
     user_embedding = embedding_client.embedding_text(search_keyword)
