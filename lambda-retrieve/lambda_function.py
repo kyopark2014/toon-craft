@@ -512,7 +512,7 @@ def update_recommendation_to_dynamodb(id, episode, media_list, persona, question
             'media_list': {'L': media_list},  # List type
             'persona': {'S': persona},
             'questions': {'L': questions},  # List type
-            'recommend': {'S': json.dumps(recommend)},
+            'recommend': {'M': recommend},
             'recommend_id': {'S': recommend_id},
             'result': {'S': result}
         }
