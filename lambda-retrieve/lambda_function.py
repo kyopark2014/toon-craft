@@ -752,6 +752,7 @@ def lambda_handler(event, context):
         InvocationType='Event',
         Payload=json.dumps({
             "id": user_id,
+            "device_id": device_id,
             "episode": episode,
             "media_list": media_list,
             "persona": persona,
@@ -767,6 +768,7 @@ def lambda_handler(event, context):
         'statusCode': 200,
         'body': {
             "user_id": user_id,
+            "device_id": device_id,
             "info": info
         }
     }
