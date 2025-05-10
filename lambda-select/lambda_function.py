@@ -4,14 +4,6 @@ from genai_kit.aws.amazon_image import BedrockAmazonImage, ImageParams, NovaImag
 from genai_kit.aws.bedrock import BedrockModel
 from genai_kit.aws.claude import BedrockClaude
 
-canvas = BedrockAmazonImage(modelId=BedrockModel.NOVA_CANVAS)
-
-REGION_NAME = "ap-northeast-1"
-CF_DOMAIN = "https://d1z4gor1v1vm43.cloudfront.net"
-DYNAMO_TABLE = "hur-restaurants-500"
-S3_BUCKET = "hur-restaurants-500"
-S3_OUTPUT_BUCKET = "toon-craft-media"
-
 def extract_json(str):
     try:
         str = str.replace('```json', '').replace('```', '')
@@ -22,7 +14,7 @@ def extract_json(str):
     
 def generate_questions(persona, selected_episode):
     PROMPT = f"""너는 주어진 내 정보를 보고 분위기와 성격을 추론하는 감성적인 AI 스토리텔러야. 일상을 기반으로 스토리를 만들 거야.
-    주어진 페르소나와 에피소드를 보고, 나의 취향을 파악하기 위한 질문 3개를 각각 20글자가 넘지 않는 간결한 한 문장으로 만들어주세요.
+    주어진 페르소나와 에피소드를 보고, 나의 취향을 파악하기 위한 질문 3개를 각각 간결하고 재치있는 한 문장으로 만들어주세요.
     각 질문에는 3개의 옵션을 포함해야 합니다.
 
     주어진 나의 정보:
@@ -37,7 +29,7 @@ def generate_questions(persona, selected_episode):
       - options: list[str]
     """
 
-    claude = BedrockClaude(region='us-east-1', modelId=BedrockModel.NOVA_MICRO_CR)
+    claude = BedrockClaude(region='us-east-1', modelId=BedrockModel.NOVA_LITE_CR)
     res = claude.converse(text=PROMPT)
     question_data = extract_json(res)
     
