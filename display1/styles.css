@@ -1,0 +1,502 @@
+@import url("https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Comic+Neue:wght@700&display=swap");
+
+body {
+  background-color: #f8f4e9;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  min-height: 100vh;
+  margin: 0;
+  font-family: "Noto Sans KR", sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  overflow-x: hidden;
+}
+
+.comic-title {
+  font-family: "Comic Neue", cursive;
+  font-size: 2rem;
+  text-align: center;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  /* color: #333;
+  background-color: #fff; */
+  color: #fff;
+  background-color: #ff5252;
+  padding: 20px 30px;
+  border-radius: 15px;
+  border: 5px solid #000;
+  box-shadow: 5px 5px 0 #000;
+  display: inline-block;
+  line-height: 1.4;
+  width: 90%;
+  /* transform: rotate(-2deg); */
+}
+
+/* 정보 상단 박스 */
+.info-header {
+  max-width: 95vw;
+  width: 95%;
+  background-color: #fffd9e;
+  border: 5px solid #000;
+  border-radius: 15px;
+  padding: 15px;
+  box-shadow: 10px 10px 0 #000;
+  margin-top: 30px;
+  margin-bottom: 30px;
+  position: relative;
+  z-index: 5;
+  text-align: center;
+}
+
+.info-header::before {
+  content: "오늘의 당신은?";
+  font-size: x-large;
+  position: absolute;
+  top: -30px;
+  left: 30px;
+  background-color: #999fff;
+  color: white;
+  padding: 5px 15px;
+  border: 3px solid #000;
+  border-radius: 30px;
+  font-family: "Comic Neue", cursive;
+  font-weight: bold;
+  transform: rotate(-5deg);
+  box-shadow: 3px 3px 0 #000;
+  z-index: 10;
+}
+
+.info-header::after {
+  content: "";
+  position: absolute;
+  width: 30px;
+  height: 30px;
+  background-color: #fffd9e;
+  border-left: 5px solid #000;
+  border-bottom: 5px solid #000;
+  bottom: -20px;
+  left: 50%;
+  transform: translateX(-50%) rotate(-45deg);
+  z-index: 1;
+}
+
+#userEmotions {
+  font-size: x-large;
+  margin-bottom: 15px;
+}
+.info-header:before {
+  z-index: 3;
+}
+
+.situation-box {
+  background-color: white;
+  border: 3px solid #000;
+  border-radius: 10px;
+  padding: 15px;
+  margin: 0 auto;
+  box-shadow: 5px 5px 0 #000;
+  max-width: 90%;
+  font-size: 1.1em;
+}
+
+.today-info,
+.food-info {
+  width: 95vw;
+  background-color: white;
+  border: 3px solid #000;
+  border-radius: 12px;
+  padding: 10px 5px;
+  box-shadow: 5px 5px 0 #000;
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+@media (max-width: 768px) {
+  .today-info,
+  .food-info {
+    width: 100%;
+  }
+}
+
+.info-title {
+  font-family: "Comic Neue", cursive;
+  background-color: #999fff;
+  color: #000;
+  padding: 5px 10px;
+  border: 2px solid #000;
+  border-radius: 20px;
+  display: inline-block;
+  margin: 0 0 10px 0;
+  transform: rotate(-2deg);
+  box-shadow: 2px 2px 0 #000;
+}
+.comic-container {
+  max-width: 95vw;
+  width: 95%;
+  background-color: #fff;
+  border: 5px solid #000;
+  border-radius: 15px;
+  padding: 15px;
+  box-shadow: 10px 10px 0 #000;
+  margin-bottom: 20px;
+}
+
+.comic-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: repeat(2, auto);
+  gap: 30px;
+  padding: 10px;
+  max-width: 100%;
+  margin: 0;
+}
+
+.comic-panel {
+  position: relative;
+  width: 100%;
+  height: 0;
+  padding-bottom: 100%;
+  background-color: #fff;
+  border: 5px solid #000;
+  border-radius: 5px;
+  overflow: hidden;
+  box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s ease;
+}
+
+.comic-panel img,
+.comic-panel video {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  top: 0;
+  left: 0;
+}
+
+/* 패널 번호 스타일 제거 */
+
+.panel-caption {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: rgba(255, 255, 255, 1);
+  padding: 8px;
+  font-family: "Comic Neue", cursive;
+  font-weight: bold;
+  text-align: center;
+  border-top: 3px solid #000;
+}
+
+/* 말풍선 스타일 개선 */
+.speech-bubble {
+  position: absolute;
+  background-color: #fff;
+  border: 3px solid #000;
+  border-radius: 20px;
+  padding: 10px 15px;
+  font-family: "Comic Neue", cursive;
+  font-weight: bold;
+  font-size: 1.1rem;
+  max-width: 70%;
+  text-align: center;
+  box-shadow: 4px 4px 0 #000;
+  z-index: 5;
+  transform: rotate(-2deg);
+  transition: transform 0.3s ease;
+}
+
+.speech-bubble:hover {
+  transform: rotate(0) scale(1.05);
+}
+
+/* 말풍선 꼬리 스타일 개선 */
+.speech-bubble.bubble-bottom::after {
+  content: "";
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  background-color: white;
+  border-right: 3px solid #000;
+  border-bottom: 3px solid #000;
+  bottom: -10px;
+  left: 30px;
+  transform: rotate(45deg);
+  z-index: -1;
+}
+
+.speech-bubble.bubble-top::after {
+  content: "";
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  background-color: white;
+  border-left: 3px solid #000;
+  border-top: 3px solid #000;
+  top: -10px;
+  right: 30px;
+  transform: rotate(45deg);
+  z-index: -1;
+}
+
+.panel-1-bubble {
+  top: 20px;
+  left: 15px;
+  background-color: #ffff99;
+}
+
+.panel-2-bubble {
+  top: 20px;
+  right: 15px;
+  background-color: #ff9999;
+}
+
+.panel-3-bubble {
+  top: 20px;
+  left: 15px;
+  background-color: #99ff99;
+}
+
+.panel-4-bubble {
+  top: 20px;
+  right: 15px;
+  background-color: #9999ff;
+}
+
+/* 효과음 스타일 개선 */
+.sound-effect {
+  position: absolute;
+  font-family: "Comic Neue", cursive;
+  font-weight: bold;
+  font-size: 2.5rem;
+  /* color: #ff5252; */
+  color: white;
+  text-shadow: 3px 0 0 #000, -3px 0 0 #000, 0 3px 0 #000, 0 -3px 0 #000,
+    2px 2px 0 #000, -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000;
+  z-index: 5;
+  transform: rotate(-10deg);
+  animation: pulse 1s infinite alternate;
+}
+
+@keyframes pulse {
+  from {
+    transform: rotate(-10deg) scale(1);
+  }
+  to {
+    transform: rotate(-8deg) scale(1.1);
+  }
+}
+
+.panel-1-effect {
+  top: 65%;
+  right: 20px;
+}
+
+.panel-2-effect {
+  top: 60%;
+  left: 20px;
+}
+
+.panel-3-effect {
+  top: 65%;
+  right: 25px;
+}
+
+.panel-4-effect {
+  top: 60%;
+  left: 25px;
+}
+
+.text-content {
+  background-color: #fff;
+  border: 5px solid #000;
+  border-radius: 15px;
+  padding: 20px;
+  font-family: "Noto Sans KR", sans-serif;
+  line-height: 1.6;
+  max-width: 95vw;
+  width: 95%;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  box-shadow: 10px 10px 0 #000;
+  position: relative;
+}
+
+.text-content::before {
+  content: "";
+  position: absolute;
+  width: 30px;
+  height: 30px;
+  background-color: #fff;
+  border-left: 5px solid #000;
+  border-top: 5px solid #000;
+  top: -20px;
+  left: 50%;
+  transform: translateX(-50%) rotate(45deg);
+}
+
+.text-content h4 {
+  margin: 0 0 10px 0;
+  color: #333;
+  font-size: 1.5rem;
+  border-bottom: 3px dashed #ff5252;
+  padding-bottom: 5px;
+  display: inline-block;
+}
+
+.text-content ul {
+  margin: 0;
+  padding-left: 20px;
+  list-style-type: none;
+}
+
+.text-content ul li {
+  position: relative;
+  padding-left: 25px;
+  margin-bottom: 8px;
+}
+
+.text-content ul li::before {
+  content: "✦";
+  position: absolute;
+  left: 0;
+  color: #ff5252;
+  font-weight: bold;
+}
+
+.emotion-highlight {
+  display: inline-block;
+  background-color: #ffff00;
+  padding: 3px 10px;
+  border-radius: 10px;
+  font-weight: bold;
+  transform: rotate(-2deg);
+  margin: 0 2px;
+  border: 2px solid #000;
+  box-shadow: 2px 2px 0 #000;
+}
+
+.situation-box {
+  background-color: #e6f7ff;
+  border: 3px solid #000;
+  border-radius: 10px;
+  padding: 15px;
+  margin: 15px auto;
+  box-shadow: 5px 5px 0 #000;
+  max-width: 90%;
+  font-size: 1.1em;
+}
+
+.text-content pre {
+  background-color: #fffc9e;
+  padding: 15px;
+  border-radius: 10px;
+  margin-top: 5px;
+  margin-bottom: 20px;
+  border: 3px solid #000;
+  font-family: "Noto Sans KR", sans-serif;
+  white-space: pre-wrap;
+}
+
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+  width: 100%;
+}
+
+.loading-spinner {
+  border: 8px solid #f3f3f3;
+  border-top: 8px solid #ff5252;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.error-message {
+  background-color: #ffdddd;
+  color: #ff0000;
+  padding: 15px;
+  border-radius: 10px;
+  margin: 20px 0;
+  border: 3px solid #ff0000;
+  font-weight: bold;
+  text-align: center;
+}
+
+.refresh-button {
+  background-color: #ff5252;
+  color: white;
+  font-family: "Comic Neue", cursive;
+  font-weight: bold;
+  font-size: 1.2rem;
+  padding: 10px 20px;
+  border: 3px solid #000;
+  border-radius: 10px;
+  box-shadow: 5px 5px 0 #000;
+  cursor: pointer;
+  margin-bottom: 30px;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.refresh-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 7px 7px 0 #000;
+}
+
+.refresh-button:active {
+  transform: translateY(2px);
+  box-shadow: 3px 3px 0 #000;
+}
+
+.timer-container {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background-color: rgba(255, 255, 255, 0.9);
+  border: 3px solid #000;
+  border-radius: 10px;
+  padding: 10px;
+  font-family: "Comic Neue", cursive;
+  font-weight: bold;
+  box-shadow: 5px 5px 0 #000;
+  z-index: 100;
+}
+
+.timer-text {
+  margin: 0;
+  color: #333;
+}
+
+.timer-progress {
+  width: 100%;
+  height: 10px;
+  background-color: #f3f3f3;
+  border-radius: 5px;
+  margin-top: 5px;
+  overflow: hidden;
+}
+
+.timer-bar {
+  height: 100%;
+  background-color: #ff5252;
+  border-radius: 5px;
+  width: 100%;
+  transition: width 1s linear;
+}
