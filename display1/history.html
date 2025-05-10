@@ -206,10 +206,7 @@
                 <video controls loop autoplay muted playsinline>
                   <source src="${mediaUrl}" type="video/mp4">
                   브라우저가 비디오를 지원하지 않습니다.
-                </video>
-                <div class="speech-bubble panel-${index + 1}-bubble">${
-                speechBubbleTexts[index]
-              }</div>
+                </video>               
                 <div class="sound-effect panel-${index + 1}-effect">${
                 soundEffectTexts[index]
               }</div>
@@ -218,9 +215,6 @@
             } else {
               panel.innerHTML = `
                 <img src="${mediaUrl}" alt="${index + 1}">
-                <div class="speech-bubble panel-${index + 1}-bubble">${
-                speechBubbleTexts[index]
-              }</div>
                 <div class="sound-effect panel-${index + 1}-effect">${
                 soundEffectTexts[index]
               }</div>
