@@ -702,30 +702,24 @@ def lambda_handler(event, context):
     # Update DynamoDB with the recommendation data
     episode = selected_episode
     media_list = [
-        {"S": urls[0]},  # ingredients video
-        {"S": urls[1]},  # preparation image
-        {"S": urls[2]},  # cooking image
-        {"S": urls[3]}   # plating video
+        urls[0],  # ingredients video
+        urls[1],  # preparation image
+        urls[2],  # cooking image
+        urls[3]   # plating video
     ]
     persona = persona
     questions = [
         {
-            "M": {
-                "question": {"S": qa_pairs[0]["question"]},
-                "answer": {"S": qa_pairs[0]["answer"]}
-            }
+           "question": qa_pairs[0]["question"],
+            "answer": qa_pairs[0]["answer"]
         },
         {
-            "M": {
-                "question": {"S": qa_pairs[1]["question"]},
-                "answer": {"S": qa_pairs[1]["answer"]}
-            }
+            "question": qa_pairs[1]["question"],
+            "answer": qa_pairs[1]["answer"]
         },
         {
-            "M": {
-                "question": {"S": qa_pairs[2]["question"]},
-                "answer": {"S": qa_pairs[2]["answer"]}
-            }
+            "question": qa_pairs[2]["question"],
+            "answer": qa_pairs[2]["answer"]
         }
     ]
     recommend = recommend
