@@ -80,7 +80,7 @@
       // 설정값
       const LAMBDA_ENDPOINT =
         "https://2hqhh2v9gd.execute-api.ap-northeast-1.amazonaws.com/prd/toons-craft-latest";
-      const REFRESH_INTERVAL = 10; // 자동 갱신 시간(초)
+      const REFRESH_INTERVAL = 5; // 자동 갱신 시간(초)
       const deviceId = getUrlParameter("device_id"); // URL에서 device_id 파라미터 추출
 
       // 타이머 변수
@@ -106,6 +106,8 @@
         "완성된 요리를 즐겨보세요",
       ];
 
+      let latestData = null;
+
       // Lambda 함수에서 데이터 가져오기
       async function fetchDataFromLambda() {
         try {
@@ -126,45 +128,41 @@
         }
       }
 
+      const generateRandomColor = () => {
+        // 밝은 색상 위주로 생성
+        const hue = Math.floor(Math.random() * 360);
+        return `hsl(${hue}, 100%, 70%)`;
+      };
+
       // 감정 표시 형식 지정
       function formatEmotions(emotions) {
         if (!emotions) return "";
 
-        const colorOptions = [
-          "#ff9999",
-          "#99ff99",
-          "#99ffff",
-          "#9999ff",
-          "#ff99ff",
-        ];
-
         return emotions
           .split(",")
-          .map((emotion, index) => {
-            const colorIndex = index % colorOptions.length;
-            return `<span class="emotion-highlight" style="background-color: ${
-              colorOptions[colorIndex]
-            };">${emotion.trim()}</span>`;
+          .map((emotion) => {
+            const bgColor = generateRandomColor();
+            return `<span class="emotion-highlight" style="background-color: ${bgColor};">${emotion}</span>`;
           })
           .join(" ");
-
-        // return emotions
-        //   .split(",")
-        //   .map(
-        //     (emotion) =>
-        //       `<span class="emotion-highlight">${emotion.trim()}</span>`
-        //   )
-        //   .join(" ");
       }
 
       // 데이터를 가져와 화면에 표시하는 함수
       async function renderData() {
         try {
           const data = await fetchDataFromLambda();
-          console.log(data);
           if (!data) {
             throw new Error("데이터를 가져오지 못했습니다.");
           }
+
+          if (latestData?.user_id === data?.user_id) {
+            startRefreshTimer();
+            return;
+          }
+
+          console.log(data);
+
+          latestData = data;
 
           const comicGrid = document.getElementById("comicGrid");
           const comicTitle = document.getElementById("comicTitle");

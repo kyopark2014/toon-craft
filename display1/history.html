@@ -6,15 +6,6 @@
     <title>4컷 만화 스타일 갤러리</title>
   </head>
   <body>
-    <!-- 정보 상단 박스  -->
-    <!-- <div class="info-header">
-      <div class="today-info">
-        <div>
-          <div id="userEmotions"></div>
-          <div class="situation-box" id="userEpisode"></div>
-        </div>
-      </div>
-    </div> -->
     <div class="info-header">
       <div id="userEmotions"></div>
       <div class="situation-box" id="userEpisode"></div>
@@ -101,6 +92,8 @@
         "완성된 요리를 즐겨보세요",
       ];
 
+      let latestData = null;
+
       // Lambda 함수에서 데이터 가져오기
       async function fetchDataFromLambda() {
         try {
@@ -115,45 +108,41 @@
         }
       }
 
+      const generateRandomColor = () => {
+        // 밝은 색상 위주로 생성
+        const hue = Math.floor(Math.random() * 360);
+        return `hsl(${hue}, 100%, 70%)`;
+      };
+
       // 감정 표시 형식 지정
       function formatEmotions(emotions) {
         if (!emotions) return "";
 
-        const colorOptions = [
-          "#ff9999",
-          "#99ff99",
-          "#99ffff",
-          "#9999ff",
-          "#ff99ff",
-        ];
-
         return emotions
           .split(",")
-          .map((emotion, index) => {
-            const colorIndex = index % colorOptions.length;
-            return `<span class="emotion-highlight" style="background-color: ${
-              colorOptions[colorIndex]
-            };">${emotion.trim()}</span>`;
+          .map((emotion) => {
+            const bgColor = generateRandomColor();
+            return `<span class="emotion-highlight" style="background-color: ${bgColor};">${emotion}</span>`;
           })
           .join(" ");
-
-        // return emotions
-        //   .split(",")
-        //   .map(
-        //     (emotion) =>
-        //       `<span class="emotion-highlight">${emotion.trim()}</span>`
-        //   )
-        //   .join(" ");
       }
 
       // 데이터를 가져와 화면에 표시하는 함수
       async function renderData() {
         try {
           const data = await fetchDataFromLambda();
+
           console.log(data);
           if (!data) {
             throw new Error("데이터를 가져오지 못했습니다.");
           }
+
+          if (latestData?.id === data?.id) {
+            console.log("데이터 변경이 없어서 새로고침 하지 않습니다.");
+            return;
+          }
+
+          latestData = data;
 
           const comicGrid = document.getElementById("comicGrid");
           const comicTitle = document.getElementById("comicTitle");
@@ -293,7 +282,7 @@
           const percentage = (timeLeft / REFRESH_INTERVAL) * 100;
           timerBar.style.width = percentage + "%";
 
-          // 시간이 다 되면 데이터 다시 가져오기
+          // 시간이 다 되면 데이터 확인
           if (timeLeft <= 0) {
             clearInterval(timer);
             renderData();
@@ -310,7 +299,6 @@
             setupRefreshTimer();
           });
 
-        // 타이머 객체 반환 (필요시 정리를 위해)
         return timer;
       }
 
