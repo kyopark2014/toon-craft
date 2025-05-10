@@ -22,8 +22,6 @@ body {
   text-align: center;
   margin-top: 20px;
   margin-bottom: 20px;
-  /* color: #333;
-  background-color: #fff; */
   color: #fff;
   background-color: #ff5252;
   padding: 20px 30px;
@@ -88,19 +86,21 @@ body {
   font-size: x-large;
   margin-bottom: 15px;
 }
+
 .info-header:before {
   z-index: 3;
 }
 
 .situation-box {
-  background-color: white;
+  background-color: #e6f7ff;
   border: 3px solid #000;
   border-radius: 10px;
   padding: 15px;
-  margin: 0 auto;
+  margin: 15px;
   box-shadow: 5px 5px 0 #000;
   max-width: 90%;
-  font-size: 1.1em;
+  font-size: 1.2em;
+  font-weight: bold;
 }
 
 .today-info,
@@ -122,18 +122,6 @@ body {
   }
 }
 
-.info-title {
-  font-family: "Comic Neue", cursive;
-  background-color: #999fff;
-  color: #000;
-  padding: 5px 10px;
-  border: 2px solid #000;
-  border-radius: 20px;
-  display: inline-block;
-  margin: 0 0 10px 0;
-  transform: rotate(-2deg);
-  box-shadow: 2px 2px 0 #000;
-}
 .comic-container {
   max-width: 95vw;
   width: 95%;
@@ -176,21 +164,6 @@ body {
   object-fit: cover;
   top: 0;
   left: 0;
-}
-
-/* 패널 번호 스타일 제거 */
-
-.panel-caption {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background-color: rgba(255, 255, 255, 1);
-  padding: 8px;
-  font-family: "Comic Neue", cursive;
-  font-weight: bold;
-  text-align: center;
-  border-top: 3px solid #000;
 }
 
 /* 말풍선 스타일 개선 */
@@ -379,17 +352,6 @@ body {
   margin: 0 2px;
   border: 2px solid #000;
   box-shadow: 2px 2px 0 #000;
-}
-
-.situation-box {
-  background-color: #e6f7ff;
-  border: 3px solid #000;
-  border-radius: 10px;
-  padding: 15px;
-  margin: 15px auto;
-  box-shadow: 5px 5px 0 #000;
-  max-width: 90%;
-  font-size: 1.1em;
 }
 
 .text-content pre {
