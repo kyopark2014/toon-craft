@@ -10,7 +10,7 @@
 
       body {
         background-color: #f8f4e9;
-        background-image: url("https://d2w79zoxq32d33.cloudfront.net/html/background.jpg");
+        /* background-image: url("https://d2w79zoxq32d33.cloudfront.net/html/background.jpg"); */
         background-size: cover;
         background-position: center;
         background-repeat: no-repeat;
@@ -38,6 +38,70 @@
         transform: rotate(-2deg);
       }
 
+      /* 정보 상단 박스 */
+      .info-header {
+        max-width: 95vw;
+        width: 95%;
+        background-color: #fffd9e;
+        border: 5px solid #000;
+        border-radius: 15px;
+        padding: 15px;
+        box-shadow: 10px 10px 0 #000;
+        margin-bottom: 20px;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        position: relative;
+        z-index: 5;
+      }
+
+      .info-header::before {
+        content: "오늘의 추천 메뉴!";
+        position: absolute;
+        top: -15px;
+        left: 30px;
+        background-color: #ff5252;
+        color: white;
+        padding: 5px 15px;
+        border: 3px solid #000;
+        border-radius: 30px;
+        font-family: "Comic Neue", cursive;
+        font-weight: bold;
+        transform: rotate(-5deg);
+        box-shadow: 3px 3px 0 #000;
+        z-index: 10;
+      }
+
+      .today-info,
+      .food-info {
+        width: 48%;
+        background-color: white;
+        border: 3px solid #000;
+        border-radius: 12px;
+        padding: 10px;
+        box-shadow: 5px 5px 0 #000;
+        margin-bottom: 10px;
+      }
+
+      @media (max-width: 768px) {
+        .today-info,
+        .food-info {
+          width: 100%;
+        }
+      }
+
+      .info-title {
+        font-family: "Comic Neue", cursive;
+        background-color: #9999ff;
+        color: #000;
+        padding: 5px 10px;
+        border: 2px solid #000;
+        border-radius: 20px;
+        display: inline-block;
+        margin: 0 0 10px 0;
+        transform: rotate(-2deg);
+        box-shadow: 2px 2px 0 #000;
+      }
       .comic-container {
         max-width: 95vw;
         width: 95%;
@@ -70,11 +134,6 @@
         overflow: hidden;
         box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.2);
         transition: transform 0.3s ease;
-      }
-
-      .comic-panel:hover {
-        transform: scale(1.02);
-        z-index: 10;
       }
 
       .comic-panel img,
@@ -357,10 +416,71 @@
         font-weight: bold;
         text-align: center;
       }
+
+      .refresh-button {
+        background-color: #ff5252;
+        color: white;
+        font-family: "Comic Neue", cursive;
+        font-weight: bold;
+        font-size: 1.2rem;
+        padding: 10px 20px;
+        border: 3px solid #000;
+        border-radius: 10px;
+        box-shadow: 5px 5px 0 #000;
+        cursor: pointer;
+        margin-bottom: 30px;
+        transition: transform 0.2s, box-shadow 0.2s;
+      }
+
+      .refresh-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 7px 7px 0 #000;
+      }
+
+      .refresh-button:active {
+        transform: translateY(2px);
+        box-shadow: 3px 3px 0 #000;
+      }
+
+      .timer-container {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background-color: rgba(255, 255, 255, 0.9);
+        border: 3px solid #000;
+        border-radius: 10px;
+        padding: 10px;
+        font-family: "Comic Neue", cursive;
+        font-weight: bold;
+        box-shadow: 5px 5px 0 #000;
+        z-index: 100;
+      }
+
+      .timer-text {
+        margin: 0;
+        color: #333;
+      }
+
+      .timer-progress {
+        width: 100%;
+        height: 10px;
+        background-color: #f3f3f3;
+        border-radius: 5px;
+        margin-top: 5px;
+        overflow: hidden;
+      }
+
+      .timer-bar {
+        height: 100%;
+        background-color: #ff5252;
+        border-radius: 5px;
+        width: 100%;
+        transition: width 1s linear;
+      }
     </style>
   </head>
   <body>
-    <h1 class="comic-title">오늘의 요리 이야기</h1>
+    <h1 id="comicTitle" class="comic-title">오늘의 요리 이야기</h1>
 
     <div class="comic-container">
       <div id="comicGrid" class="comic-grid">
@@ -377,63 +497,22 @@
       </div>
     </div>
 
+    <button class="refresh-button" id="refreshButton">다른 이야기 보기</button>
+
+    <div class="timer-container">
+      <p class="timer-text">
+        다음 이야기까지: <span id="countdown">20</span>초
+      </p>
+      <div class="timer-progress">
+        <div id="timerBar" class="timer-bar"></div>
+      </div>
+    </div>
+
     <script>
-      // DynamoDB에서 데이터를 가져오는 함수 시뮬레이션
-      async function fetchDataFromDynamoDB() {
-        try {
-          // 실제 환경에서는 여기에 AWS SDK를 사용하여 DynamoDB에서 데이터를 가져오는 코드가 들어갑니다
-          // 지금은 주어진 예제 데이터를 사용
-          return {
-            id: "user1234",
-            episode:
-              "어느 날 동료들과 함께 커피를 마시던 중, 새로운 아이디어에 대해 열띤 토론을 벌였습니다. 그는 자신의 아이디어를 설명하며 열정적으로 손짓을 하였고, 결국 그의 아이디어가 채택되었습니다. :짠:",
-            media_list: [
-              "https://d3dybxg1g4fwkj.cloudfront.net/multi_shot_automated_2/120_Doenjang_Jjigae_1_ingredients_5_20250414_202423_20250506_114301/dygsdxd00vro/shot_0001.mp4",
-              "https://d2w79zoxq32d33.cloudfront.net/familiar-15-menus2/120_Doenjang_Jjigae_2_preparation_3_20250414_202518.png",
-              "https://d2w79zoxq32d33.cloudfront.net/familiar-15-menus2/120_Doenjang_Jjigae_3_cooking_3_20250414_202622.png",
-              "https://d3dybxg1g4fwkj.cloudfront.net/multi_shot_automated_2/120_Doenjang_Jjigae_4_plating_1_20250414_202722_20250506_115124/sutvi1pozw4w/shot_0005.mp4",
-            ],
-            persona:
-              "이 인물은 30대 후반의 남성으로 보입니다. 안경을 쓰고 있어 지적인 이미지를 가지고 있으며, 웃는 표정으로 보아 친근하고 쾌활한 성격을 가지고 있는 것으로 보입니다. 아마도 학문적인 분야에서 일하는 직업을 가지고 있을 것 같습니다.",
-            questions: [
-              {
-                question:
-                  "이번에 동료들과 함께 열띬로 토론한 아이디어에 대해 생각해 보았을 때, 당신이 가장 좋아하는 토론 주제는 무엇인가요?",
-                answer: "과학 기술 관련 주제",
-              },
-              {
-                question:
-                  "동료들과 아이디어를 토론하며 열정적으로 손짓을 하던 모습을 보고, 당신은 어떤 활동을 통해 자신의 생각을 표현하는 것을 좋아하나요?",
-                answer:
-                  "예술적인 표현을 통해 자신의 생각을 전달하는 것, 예를 들어 그림이나 음악",
-              },
-              {
-                question:
-                  "이 인물이 취미 활동으로 가장 즐기는 것은 무엇인가요? 아래 중 하나를 선택해 주세요.",
-                answer: "커피숍에서 다양한 음료를 시음하기",
-              },
-            ],
-            recommend: `
-#### 오늘의 당신은?
-- **현재 감정**: 성취감, 열정, 기쁨
-- **상황**: 동료들과의 토론에서 아이디어가 채택되어 성공적인 순간을 경험함
-#### 추천 음식
-\`\`\`txt
-과학적 호기심과 예술적 감성이 공존하는 당신에게, 성취의 기쁨을 더욱 풍성하게 해줄 색감이 화려하고 다양한 맛의 조화가 돋보이는 한식 요리
-\`\`\`
-#### 추천 이유
-오늘 당신은 마치 완벽한 커피 한 잔처럼 균형 잡힌 하루를 보내셨군요! 과학 기술에 대한 열정과 예술적 감성을 모두 갖춘 당신의 아이디어가 빛을 발한 특별한 날이니, 그 성취감을 더욱 풍성하게 해줄 음식이 필요합니다.
-마치 다양한 커피를 음미하듯 여러 맛이 조화롭게 어우러진 한식이 어떨까요? 색감이 화려한 음식은 당신의 예술적 감성을 만족시키고, 다채로운 맛의 조합은 과학적 호기심을 자극할 거예요. 성공의 짜릿함을 입안 가득 느끼며, 오늘의 기쁨을 더욱 특별하게 기념해보세요. 당신의 빛나는 아이디어처럼, 오늘 저녁도 빛나길 바랍니다!
-`,
-            recommend_id: "120",
-            result:
-              "# 왕성식당의 된장찌개, 당신의 열정적인 토론 후에 딱 맞는 선택이네요! 🌟\n\n안녕하세요, 지적이면서도 친근한 매력을 가진 당신! 열정적인 토론 끝에 아이디어가 채택되었다니 정말 축하드려요! 👏 그 성취감을 더욱 특별하게 만들어줄 음식을 소개해드릴게요.",
-          };
-        } catch (error) {
-          console.error("데이터를 가져오는 중 오류가 발생했습니다:", error);
-          throw error;
-        }
-      }
+      // 설정값
+      const LAMBDA_ENDPOINT =
+        "https://2hqhh2v9gd.execute-api.ap-northeast-1.amazonaws.com/prd/toons-craft-history";
+      const REFRESH_INTERVAL = 20; // 자동 갱신 시간(초)
 
       // 말풍선 텍스트 설정
       const speechBubbleTexts = [
@@ -454,31 +533,63 @@
         "완성된 요리를 즐겨보세요",
       ];
 
+      // Lambda 함수에서 데이터 가져오기
+      async function fetchDataFromLambda() {
+        try {
+          const response = await fetch(LAMBDA_ENDPOINT);
+          if (!response.ok) {
+            throw new Error("API 응답이 올바르지 않습니다.");
+          }
+          return await response.json();
+        } catch (error) {
+          console.error("데이터를 가져오는 중 오류가 발생했습니다:", error);
+          return null;
+        }
+      }
+
+      // 감정 표시 형식 지정
+      function formatEmotions(emotions) {
+        if (!emotions) return "";
+
+        return emotions
+          .split(",")
+          .map(
+            (emotion) =>
+              `<span class="emotion-highlight">${emotion.trim()}</span>`
+          )
+          .join(" ");
+      }
+
       // 데이터를 가져와 화면에 표시하는 함수
       async function renderData() {
         try {
-          const data = await fetchDataFromDynamoDB();
+          const data = await fetchDataFromLambda();
+          if (!data) {
+            throw new Error("데이터를 가져오지 못했습니다.");
+          }
+
           const comicGrid = document.getElementById("comicGrid");
           const textContent = document.getElementById("textContent");
+          const comicTitle = document.getElementById("comicTitle");
 
           // 로딩 표시 제거
           comicGrid.innerHTML = "";
 
           // 에피소드 정보를 제목에 적용
-          const episodeParts = data.episode.split(":짠:");
-          document.querySelector(".comic-title").textContent = `${
-            data.recommend_id
-          } - ${episodeParts[0].substring(0, 20)}...`;
+          comicTitle.textContent = `${data.recommend_id} - 오늘의 요리 이야기`;
 
           // 미디어 패널 생성
-          data.media_list.forEach((mediaUrl, index) => {
+          const mediaList = data.media_list || [];
+          mediaList.forEach((mediaUrl, index) => {
+            if (index >= 4) return; // 최대 4개 패널만 표시
+
             const panel = document.createElement("div");
             panel.className = "comic-panel";
 
             // 미디어 타입에 따라 이미지 또는 비디오 태그 생성
-            if (mediaUrl.endsWith(".mp4")) {
+            if (mediaUrl && mediaUrl.endsWith(".mp4")) {
               panel.innerHTML = `
-                <video controls loop autoplay muted>
+                <video controls loop autoplay muted playsinline>
                   <source src="${mediaUrl}" type="video/mp4">
                   브라우저가 비디오를 지원하지 않습니다.
                 </video>
@@ -506,8 +617,9 @@
             comicGrid.appendChild(panel);
           });
 
-          // 추천 정보 분석 및 표시
-          const recommendData = parseRecommendation(data.recommend);
+          // 추천 정보 표시
+          const recommend = data.recommend || {};
+          const recommendResult = data.result?.recommendation_result || {};
 
           // 텍스트 내용 표시
           textContent.innerHTML = `
@@ -515,20 +627,32 @@
             <h4>오늘의 당신은?</h4>
             <ul>
               <li><strong>현재 감정</strong>: ${formatEmotions(
-                recommendData.emotions
+                recommend.user_emotion
               )}</li>
               <li>
                 <strong>상황</strong>: 
                 <div class="situation-box">
-                  ${formatSituation(recommendData.situation, data.persona)}
+                  ${recommend.user_episode || ""}
                 </div>
               </li>
             </ul>
             <h4>추천 음식</h4>
-            <pre>${recommendData.food}</pre>
+            <pre>${recommendResult.title || `오늘의 추천 메뉴`}</pre>
             <h4>추천 이유</h4>
-            <p>${formatReason(recommendData.reason, data)}</p>
+            <p>${recommendResult.description || ""}</p>
+            <ul>
+              <li>${recommendResult.reason_1 || ""}</li>
+              <li>${recommendResult.reason_2 || ""}</li>
+              <li>${recommendResult.reason_3 || ""}</li>
+            </ul>
           `;
+
+          // 비디오 자동 재생 설정
+          document.querySelectorAll("video").forEach((video) => {
+            video.play().catch((error) => {
+              console.warn("자동 재생이 제한되었습니다:", error);
+            });
+          });
         } catch (error) {
           // 오류 처리
           const comicGrid = document.getElementById("comicGrid");
@@ -543,109 +667,50 @@
         }
       }
 
-      // 추천 정보 파싱
-      function parseRecommendation(recommendText) {
-        // 마크다운 내용을 파싱
-        const emotionsMatch = recommendText.match(
-          /\*\*현재 감정\*\*:\s*(.*?)(?=\n|-)/
-        );
-        const situationMatch = recommendText.match(
-          /\*\*상황\*\*:\s*(.*?)(?=\n|\*\*)/
-        );
-        const foodMatch = recommendText.match(/```txt\n([\s\S]*?)```/);
-        const reasonMatch = recommendText.match(/#### 추천 이유\n([\s\S]*?)$/);
+      // 새로고침 타이머 설정
+      function setupRefreshTimer() {
+        let timeLeft = REFRESH_INTERVAL;
+        const countdownElement = document.getElementById("countdown");
+        const timerBar = document.getElementById("timerBar");
 
-        return {
-          emotions: emotionsMatch
-            ? emotionsMatch[1].trim()
-            : "성취감, 열정, 기쁨",
-          situation: situationMatch
-            ? situationMatch[1].trim()
-            : "동료들과의 토론에서 아이디어가 채택되어 성공적인 순간을 경험함",
-          food: foodMatch
-            ? foodMatch[1].trim()
-            : "과학적 호기심과 예술적 감성이 공존하는 당신에게, 성취의 기쁨을 더욱 풍성하게 해줄 색감이 화려하고 다양한 맛의 조화가 돋보이는 한식 요리",
-          reason: reasonMatch
-            ? reasonMatch[1].trim()
-            : "오늘 당신은 마치 완벽한 커피 한 잔처럼 균형 잡힌 하루를 보내셨군요!",
-        };
-      }
+        // 초기 타이머 바 설정
+        timerBar.style.width = "100%";
 
-      // 감정 표시 형식 지정
-      function formatEmotions(emotions) {
-        return emotions
-          .split(",")
-          .map(
-            (emotion) =>
-              `<span class="emotion-highlight">${emotion.trim()}</span>`
-          )
-          .join(" ");
-      }
+        // 1초마다 타이머 업데이트
+        const timer = setInterval(() => {
+          timeLeft--;
+          countdownElement.textContent = timeLeft;
 
-      // 상황 표시 형식 지정
-      function formatSituation(situation, persona) {
-        let situationText = situation;
+          // 타이머 바 업데이트
+          const percentage = (timeLeft / REFRESH_INTERVAL) * 100;
+          timerBar.style.width = percentage + "%";
 
-        // 페르소나 정보를 활용
-        if (persona) {
-          const personalityTraits = extractPersonalityTraits(persona);
-          situationText += ` <span class="emotion-highlight">성공적인 순간</span>을 경험하셨군요! ${personalityTraits}`;
-        }
-
-        return situationText;
-      }
-
-      // 페르소나에서 성격 특성 추출
-      function extractPersonalityTraits(persona) {
-        // 간단하게 추출
-        if (persona.includes("지적인"))
-          return "당신의 지적인 통찰력이 빛난 순간입니다.";
-        if (persona.includes("쾌활한"))
-          return "당신의 쾌활한 에너지가 주변을 밝게 했습니다.";
-        return "당신의 창의적인 생각이 인정받은 특별한 하루입니다.";
-      }
-
-      // 추천 이유 표시 형식 지정
-      function formatReason(reason, data) {
-        let formattedReason = reason;
-
-        // 답변 정보를 활용하여 강조
-        if (data.questions && data.questions.length > 0) {
-          data.questions.forEach((q) => {
-            if (q.answer && formattedReason.includes(q.answer)) {
-              formattedReason = formattedReason.replace(
-                new RegExp(q.answer, "g"),
-                `<span class="emotion-highlight">${q.answer}</span>`
-              );
-            }
-          });
-        }
-
-        // 중요 단어나 문구 강조
-        const keyPhrases = [
-          "성취감",
-          "열정",
-          "기쁨",
-          "아이디어",
-          "균형",
-          "커피",
-          "예술적 감성",
-          "과학 기술",
-        ];
-        keyPhrases.forEach((phrase) => {
-          if (formattedReason.includes(phrase)) {
-            formattedReason = formattedReason.replace(
-              new RegExp(phrase, "g"),
-              `<span class="emotion-highlight">${phrase}</span>`
-            );
+          // 시간이 다 되면 데이터 다시 가져오기
+          if (timeLeft <= 0) {
+            clearInterval(timer);
+            renderData();
+            setupRefreshTimer(); // 타이머 재설정
           }
-        });
+        }, 1000);
 
-        return formattedReason;
+        // 새로고침 버튼 이벤트 핸들러
+        document
+          .getElementById("refreshButton")
+          .addEventListener("click", () => {
+            clearInterval(timer);
+            renderData();
+            setupRefreshTimer();
+          });
+
+        // 타이머 객체 반환 (필요시 정리를 위해)
+        return timer;
       }
 
-      // 페이지 로드 시 데이터 렌더링
-      window.addEventListener("DOMContentLoaded", renderData);
+      // 페이지 로드 시 데이터 렌더링 및 타이머 설정
+      document.addEventListener("DOMContentLoaded", () => {
+        renderData();
+        setupRefreshTimer();
+      });
     </script>
   </body>
 </html>
