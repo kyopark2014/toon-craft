@@ -742,6 +742,24 @@ def lambda_handler(event, context):
     
     print(f"device_id: {device_id}")
     print(f"result: {result}")
+    
+    dynamodb = boto3.resource('dynamodb', region_name=REGION_NAME)
+    table = dynamodb.Table('tooncraft-latest')
+    response = table.put_item(Item={
+        'device_id': device_id,
+        'user_id': user_id,
+        'id': user_id,
+        'item': item,
+        'episode': episode,
+        'media_list': media_list,
+        'persona': persona,
+        'questions': questions,
+        'recommend': recommend,
+        'recommend_id': recommend_id,
+        'result': json.dumps(explaination_obj, ensure_ascii=False),
+        'timestamp': datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+    })
+    print(f"update latest result: {response}")
 
     # Invoke custom-page lambda function
     lambda_client = boto3.client('lambda')
