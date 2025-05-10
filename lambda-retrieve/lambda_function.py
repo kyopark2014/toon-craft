@@ -23,7 +23,8 @@ dynamodb = boto3.client(
 image_bucket_name = 'toon-craft-gen-imgs-v2'
 video_bucket_name = 'tooncraft-videos-v2'
 image_prefix = 'familiar-15-menus2/'
-video_prefix = 'multi_shot_automated_2/'
+# video_prefix = 'multi_shot_automated_2/'
+video_prefix = 'single/familiar-15-menus2/'
 
 image_cf = 'https://d2w79zoxq32d33.cloudfront.net'
 video_cf = 'https://d3dybxg1g4fwkj.cloudfront.net'
@@ -487,7 +488,7 @@ def explain_food_recommendation(persona, selected_episode, qa_pairs, food_data):
         return response
 
 # Create a function to update DynamoDB table with the recommendation data
-def update_recommendation_to_dynamodb(id, episode, media_list, persona, questions, recommend, recommend_id, result):
+def update_recommendation_to_dynamodb(id, item, episode, media_list, persona, questions, recommend, recommend_id, result):
     """
     Update the tooncraft DynamoDB table with recommendation data
     
@@ -509,6 +510,7 @@ def update_recommendation_to_dynamodb(id, episode, media_list, persona, question
         # Prepare the item for DynamoDB
         item = {
             'id': id,
+            'item': item,
             'episode': episode,
             'media_list': media_list,
             'persona': persona,
@@ -605,12 +607,13 @@ def lambda_handler(event, context):
         video = video.replace(video_prefix, '')
         # print(f"video: {video}")
             
-        item_data = parse_object_name(video, video_prefix)    
+        item_data = parse_object_name(video, video_prefix)
+        print(f"video item: {item_data}")
         if item_data:    
             step = item_data.get('step')
-            if 'ingredients' in step and id == item_data.get('id'):
+            if 'ingredients' in step and str(id) == str(item_data.get('id')):
                 ingredients.append(item_data)
-            if 'plating' in step and id == item_data.get('id'):
+            if 'plating' in step and str(id) == str(item_data.get('id')):
                 plating.append(item_data)
             
     print(f"ingredients: {ingredients}")
@@ -623,9 +626,9 @@ def lambda_handler(event, context):
         item_data = parse_object_name(image, image_prefix)
         if item_data:
             step = item_data.get('step')
-            if 'preparation' in step and id == item_data.get('id'):
+            if 'preparation' in step and str(id) == str(item_data.get('id')):
                 preparation.append(item_data)
-            if 'cooking' in step and id == item_data.get('id'):
+            if 'cooking' in step and str(id) == str(item_data.get('id')):
                 cooking.append(item_data)
 
     print(f"preparation: {preparation}")
@@ -727,6 +730,7 @@ def lambda_handler(event, context):
 
     result = update_recommendation_to_dynamodb(
         id=user_id,
+        item=item,
         episode=episode,
         media_list=media_list,
         persona=persona,
