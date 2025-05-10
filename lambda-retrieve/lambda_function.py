@@ -503,25 +503,23 @@ def update_recommendation_to_dynamodb(id, episode, media_list, persona, question
     """
     try:
         # Create DynamoDB client
-        dynamodb = boto3.client('dynamodb', region_name=REGION_NAME)
+        dynamodb = boto3.resource('dynamodb', region_name=REGION_NAME)
+        table = dynamodb.Table('tooncraft')
         
         # Prepare the item for DynamoDB
         item = {
-            'id': {'S': id},  # Partition key
-            'episode': {'S': episode},
-            'media_list': {'L': media_list},  # List type
-            'persona': {'S': persona},
-            'questions': {'L': questions},  # List type
-            'recommend': {'S': json.dumps(recommend)},
-            'recommend_id': {'S': recommend_id},
-            'result': {'S': result}
+            'id': id,
+            'episode': episode,
+            'media_list': media_list,
+            'persona': persona,
+            'questions': questions,
+            'recommend': recommend,
+            'recommend_id': recommend_id,
+            'result': json.loads(result),
         }
         
         # Put item into DynamoDB
-        response = dynamodb.put_item(
-            TableName='tooncraft',
-            Item=item
-        )
+        response = table.put_item(Item=item)
         
         print("Successfully updated recommendation in DynamoDB")
         return response
