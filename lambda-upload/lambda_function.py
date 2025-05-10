@@ -4,13 +4,6 @@ from genai_kit.aws.amazon_image import BedrockAmazonImage, ImageParams, NovaImag
 from genai_kit.aws.bedrock import BedrockModel
 from genai_kit.aws.claude import BedrockClaude
 
-canvas = BedrockAmazonImage(modelId=BedrockModel.NOVA_CANVAS)
-
-REGION_NAME = "ap-northeast-1"
-CF_DOMAIN = "https://d1z4gor1v1vm43.cloudfront.net"
-DYNAMO_TABLE = "hur-restaurants-500"
-S3_BUCKET = "hur-restaurants-500"
-S3_OUTPUT_BUCKET = "toon-craft-media"
 
 boto3.setup_default_session()
 
@@ -28,7 +21,7 @@ def generate_persona_and_questions(image_bytes):
     <instruction>
     1. 이미지에서 인물의 성별, 나이대, 인상, 성격 등을 분석하세요
     2. 인물에 대한 정보를 토대로 이 인물의 페르소나를 정의하세요. 성격이나 직업적 특성을 반영하세요.
-    3. 추론된 성별, 나이대, 성격, 직업을 토대로 유쾌하거나 재밌있는 에피소드에 대해 세 가지 정의하세요. 최신 트렌드를 반영하고 이모지를 사용하여 유쾌하게 작성하세요.
+    3. 추론된 성별, 나이대, 성격, 직업을 토대로 유쾌하거나 재밌있는 에피소드에 대해 세 가지 정의하세요. 최신 트렌드를 반영하고 이모지를 사용하여 유쾌하게, 최대 2문장으로 작성하세요.
     </instruction>
 
     아래와 같은 json 포맷으로 답변하세요. 항상 한글로 서술하세요:
