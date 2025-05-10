@@ -16,6 +16,33 @@ body {
   overflow-x: hidden;
 }
 
+@keyframes titleFlyIn {
+  0% {
+    transform: translateX(-100vw) scale(0.5);
+    opacity: 0;
+  }
+  15% {
+    transform: translateX(20px) scale(1.1);
+    opacity: 1;
+  }
+  20% {
+    transform: translateX(-10px) scale(0.95);
+  }
+  25%,
+  100% {
+    transform: translateX(0) scale(1);
+  }
+}
+
+@keyframes glossyEffect {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
 .comic-title {
   font-family: "Comic Neue", cursive;
   font-size: 2rem;
@@ -31,7 +58,28 @@ body {
   display: inline-block;
   line-height: 1.4;
   width: 90%;
-  /* transform: rotate(-2deg); */
+  animation: titleFlyIn 2.5s ease-in-out infinite;
+  position: relative;
+  overflow: hidden;
+}
+
+.comic-title::before {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  right: -50%;
+  bottom: -50%;
+  /* background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.8),
+    transparent
+  ); */
+  animation: glossyEffect 1s ease-in-out infinite;
+  animation-delay: 0.2s;
+  transform-origin: 0 0;
+  pointer-events: none;
 }
 
 /* 정보 상단 박스 */
@@ -355,16 +403,30 @@ body {
   font-weight: bold;
 }
 
+@keyframes emotionShake {
+  0%,
+  100% {
+    transform: rotate(-2deg);
+  }
+  50% {
+    transform: rotate(2deg);
+  }
+}
+
 .emotion-highlight {
   display: inline-block;
   background-color: #ffff00;
   padding: 3px 10px;
   border-radius: 10px;
   font-weight: bold;
-  transform: rotate(-2deg);
   margin: 0 2px;
   border: 2px solid #000;
   box-shadow: 2px 2px 0 #000;
+  animation: emotionShake 2s ease-in-out infinite;
+}
+
+.emotion-highlight:hover {
+  animation-play-state: paused;
 }
 
 .text-content pre {
@@ -376,6 +438,7 @@ body {
   border: 3px solid #000;
   font-family: "Noto Sans KR", sans-serif;
   white-space: pre-wrap;
+  font-size: 1.1rem;
   font-weight: bold;
 }
 
