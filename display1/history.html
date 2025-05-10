@@ -53,12 +53,10 @@
         padding: 15px;
         box-shadow: 10px 10px 0 #000;
         margin-top: 30px;
-        margin-bottom: 20px;
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: space-between;
+        margin-bottom: 30px;
         position: relative;
         z-index: 5;
+        text-align: center;
       }
 
       .info-header::before {
@@ -79,8 +77,37 @@
         z-index: 10;
       }
 
+      .info-header::after {
+        content: "";
+        position: absolute;
+        width: 30px;
+        height: 30px;
+        background-color: #fffd9e;
+        border-left: 5px solid #000;
+        border-bottom: 5px solid #000;
+        bottom: -20px;
+        left: 50%;
+        transform: translateX(-50%) rotate(-45deg);
+        z-index: 1;
+      }
+
       #userEmotions {
         font-size: x-large;
+        margin-bottom: 15px;
+      }
+      .info-header:before {
+        z-index: 3;
+      }
+
+      .situation-box {
+        background-color: white;
+        border: 3px solid #000;
+        border-radius: 10px;
+        padding: 15px;
+        margin: 0 auto;
+        box-shadow: 5px 5px 0 #000;
+        max-width: 90%;
+        font-size: 1.1em;
       }
 
       .today-info,
@@ -484,17 +511,17 @@
   </head>
   <body>
     <!-- 정보 상단 박스  -->
-    <div class="info-header">
+    <!-- <div class="info-header">
       <div class="today-info">
         <div>
           <div id="userEmotions"></div>
           <div class="situation-box" id="userEpisode"></div>
         </div>
       </div>
-      <!-- <div class="food-info">
-        <div class="info-title">오늘의 당신은?</div>
-        <p id="recommendTitle"></p>
-      </div> -->
+    </div> -->
+    <div class="info-header">
+      <div id="userEmotions"></div>
+      <div class="situation-box" id="userEpisode"></div>
     </div>
 
     <h1 id="comicTitle" class="comic-title">오늘의 백반기행</h1>
@@ -549,7 +576,7 @@
       // 캡션 텍스트 설정
       const captionTexts = [
         "신선한 재료를 준비합니다",
-        "재료를 손질 중입니다",
+        "재료를 손질합니다",
         "맛있게 조리 중입니다",
         "완성된 요리를 즐겨보세요",
       ];
@@ -572,13 +599,31 @@
       function formatEmotions(emotions) {
         if (!emotions) return "";
 
+        const colorOptions = [
+          "#ff9999",
+          "#99ff99",
+          "#99ffff",
+          "#9999ff",
+          "#ff99ff",
+        ];
+
         return emotions
           .split(",")
-          .map(
-            (emotion) =>
-              `<span class="emotion-highlight">${emotion.trim()}</span>`
-          )
+          .map((emotion, index) => {
+            const colorIndex = index % colorOptions.length;
+            return `<span class="emotion-highlight" style="background-color: ${
+              colorOptions[colorIndex]
+            };">${emotion.trim()}</span>`;
+          })
           .join(" ");
+
+        // return emotions
+        //   .split(",")
+        //   .map(
+        //     (emotion) =>
+        //       `<span class="emotion-highlight">${emotion.trim()}</span>`
+        //   )
+        //   .join(" ");
       }
 
       // 데이터를 가져와 화면에 표시하는 함수
@@ -608,11 +653,23 @@
           comicGrid.innerHTML = "";
 
           // 에피소드 정보를 제목에 적용 (쉼표로 구분하여 줄바꿈)
-          const titleText =
+          let titleText =
             data.result?.recommendation_result?.title ||
             data.item?.menu[0] ||
             data.item?.name ||
             "오늘의 백반기행";
+
+          // 아이템 이름이 제목에 포함되어 있으면 강조 표시
+          if (data.result?.recommendation_result?.title && data.item?.name) {
+            const itemName = data.item.name;
+            if (data.result.recommendation_result.title.includes(itemName)) {
+              titleText = data.result.recommendation_result.title.replace(
+                itemName,
+                `<emotion-highlight>${itemName}</emotion-highlight>`
+              );
+            }
+          }
+
           comicTitle.innerHTML = titleText.split(",").join(",<br>");
 
           // 미디어 패널 생성
