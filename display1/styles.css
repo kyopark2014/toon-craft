@@ -376,6 +376,7 @@ body {
   border: 3px solid #000;
   font-family: "Noto Sans KR", sans-serif;
   white-space: pre-wrap;
+  font-weight: bold;
 }
 
 .loading {

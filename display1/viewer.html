@@ -1,159 +1,325 @@
 <!DOCTYPE html>
 <html lang="ko">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>이미지와 비디오 갤러리</title>
-    <style>
-        body {
-            background-color: #f0f0f0;
-            background-image: url('https://d2w79zoxq32d33.cloudfront.net/html/background.jpg');
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            min-height: 100vh;
-            margin: 0;
-        }
-        .gallery {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 0;
-            padding: 0;
-            max-width: 100%;
-            margin: 0;
-            height: calc(100vh - 300px);
-            align-items: center;
-        }
-        .gallery-item {
-            width: 100%;
-            height: calc((100vh - 300px) / 2);
-            object-fit: cover;
-            border: 8px solid #000;
-            box-shadow: 8px 8px 0 #000;
-            transition: transform 0.3s ease;
-            background-color: #fff;
-            position: relative;
-            overflow: hidden;
-            margin: 4px;
-        }
-        .gallery-item::before {
-            content: '';
-            position: absolute;
-            top: -4px;
-            left: -4px;
-            right: -4px;
-            bottom: -4px;
-            border: 2px solid #000;
-            z-index: 1;
-            pointer-events: none;
-        }
-        .gallery-item::after {
-            content: '';
-            position: absolute;
-            top: 4px;
-            left: 4px;
-            right: 4px;
-            bottom: 4px;
-            border: 2px solid #000;
-            z-index: 1;
-            pointer-events: none;
-        }
-        .gallery-item:hover {
-            transform: scale(1.02);
-        }
-        .gallery-item video {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            position: absolute;
-            top: 0;
-            left: 0;
-            transform: none;
-        }
-        .text-content {
-            position: relative;
-            background-color: rgba(255, 255, 255, 0.9);
-            padding: 20px;
-            font-family: 'Noto Sans KR', sans-serif;
-            line-height: 1.6;
-            margin-top: 20px;
-            height: 300px;
-            overflow-y: auto;
-            border: 2px solid #000;
-            box-shadow: 4px 4px 0 #000;
-        }
-
-        /* 스크롤바 스타일링 */
-        .text-content::-webkit-scrollbar {
-            width: 8px;
-        }
-
-        .text-content::-webkit-scrollbar-track {
-            background: #f1f1f1;
-        }
-
-        .text-content::-webkit-scrollbar-thumb {
-            background: #888;
-            border-radius: 4px;
-        }
-
-        .text-content::-webkit-scrollbar-thumb:hover {
-            background: #555;
-        }
-
-        /* 기존 스크롤 애니메이션 제거 */
-        @keyframes scrollText {
-            0% {
-                transform: none;
-            }
-            100% {
-                transform: none;
-            }
-        }
-
-        .text-content:hover {
-            animation-play-state: paused;
-        }
-
-        .text-content h4 {
-            margin: 0 0 10px 0;
-            color: #333;
-        }
-        .text-content ul {
-            margin: 0;
-            padding-left: 20px;
-        }
-        .text-content pre {
-            background-color: #f5f5f5;
-            padding: 10px;
-            border-radius: 5px;
-            margin: 10px 0;
-        }
-    </style>
-</head>
-<body>
-    <div class="gallery">
-        <video class="gallery-item" controls loop autoplay muted>
-            <source src="https://d3dybxg1g4fwkj.cloudfront.net/multi_shot_automated_2/120_Doenjang_Jjigae_1_ingredients_5_20250414_202423_20250506_114301/dygsdxd00vro/shot_0004.mp4" type="video/mp4">
-            브라우저가 비디오를 지원하지 않습니다.
-        </video>
-        <img class="gallery-item" src="https://d2w79zoxq32d33.cloudfront.net/familiar-15-menus2/120_Doenjang_Jjigae_2_preparation_4_20250414_202518.png" alt="조리 이미지">
-        <img class="gallery-item" src="https://d2w79zoxq32d33.cloudfront.net/familiar-15-menus2/120_Doenjang_Jjigae_3_cooking_4_20250414_202623.png" alt="플레이팅 이미지">
-        <video class="gallery-item" controls loop autoplay muted>
-            <source src="https://d3dybxg1g4fwkj.cloudfront.net/multi_shot_automated_2/120_Doenjang_Jjigae_4_plating_3_20250414_202723_20250506_115350/qpnyuhqrjhwh/shot_0002.mp4" type="video/mp4">
-            브라우저가 비디오를 지원하지 않습니다.
-        </video>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ToonCraft 결과</title>
+  </head>
+  <body>
+    <div class="info-header">
+      <div id="userEmotions"></div>
+      <div class="situation-box" id="userEpisode"></div>
     </div>
-    <div class="text-content">
-        <h4>오늘의 당신은?</h4>
-        <ul>
-            <li><strong>현재 감정</strong>: 성취감, 열정, 기쁨</li>
-            <li><strong>상황</strong>: 동료들과의 토론에서 아이디어가 채택되어 성공적인 순간을 경험함</li>
-        </ul>
-        <h4>추천 음식</h4>
-        <pre>과학적 호기심과 예술적 감성이 공존하는 당신에게, 성취의 기쁨을 더욱 풍성하게 해줄 색감이 화려하고 다양한 맛의 조화가 돋보이는 한식 요리</pre>
-        <h4>추천 이유</h4>
-        <p>오늘 당신은 마치 완벽한 커피 한 잔처럼 균형 잡힌 하루를 보내셨군요! 과학 기술에 대한 열정과 예술적 감성을 모두 갖춘 당신의 아이디어가 빛을 발한 특별한 날이니,</p>
+
+    <h1 id="comicTitle" class="comic-title">오늘의 백반기행</h1>
+
+    <div class="comic-container">
+      <div id="comicGrid" class="comic-grid">
+        <div class="loading">
+          <div class="loading-spinner"></div>
+        </div>
+      </div>
     </div>
-</body>
+
+    <div id="textContent" class="text-content">
+      <pre id="recommendFoodTitle"></pre>
+      <h4>왜 이 음식을 추천할까요?</h4>
+      <p id="recommendDescription"></p>
+      <ul>
+        <li id="reason1"></li>
+        <li id="reason2"></li>
+        <li id="reason3"></li>
+      </ul>
+    </div>
+
+    <div
+      id="refreshInfo"
+      class="refresh-info"
+      style="
+        text-align: center;
+        margin-top: 20px;
+        font-size: 14px;
+        color: #777;
+        display: none;
+      "
+    >
+      <span id="countdown">10</span>초 후 자동 새로고침
+    </div>
+
+    <script>
+      function loadCSS(localPath, fallbackURL) {
+        const link = document.createElement("link");
+        link.rel = "stylesheet";
+        link.type = "text/css";
+
+        // 먼저 로컬 CSS 파일 로드 시도
+        link.href = localPath;
+
+        // 로컬 파일 로드 실패 시 fallback URL로 전환
+        link.onerror = function () {
+          console.log(
+            `로컬 CSS 파일 '${localPath}'을 찾을 수 없습니다. CloudFront CSS로 대체합니다.`
+          );
+          link.href = fallbackURL;
+        };
+
+        document.head.appendChild(link);
+      }
+
+      loadCSS(
+        "./styles.css",
+        "https://d2w79zoxq32d33.cloudfront.net/html/styles.css"
+      );
+
+      // URL에서 파라미터 추출하는 함수
+      function getUrlParameter(name) {
+        const urlParams = new URLSearchParams(window.location.search);
+        return urlParams.get(name);
+      }
+
+      // 설정값
+      const LAMBDA_ENDPOINT =
+        "https://2hqhh2v9gd.execute-api.ap-northeast-1.amazonaws.com/prd/toons-craft-latest";
+      const REFRESH_INTERVAL = 10; // 자동 갱신 시간(초)
+      const deviceId = getUrlParameter("device_id"); // URL에서 device_id 파라미터 추출
+
+      // 타이머 변수
+      let timerInterval;
+      let countdownValue = REFRESH_INTERVAL;
+
+      // 말풍선 텍스트 설정
+      const speechBubbleTexts = [
+        "재료 준비 완료!",
+        "양념이 핵심이지!",
+        "이렇게 끓여야 맛있어~",
+        "완성! 맛있게 드세요!",
+      ];
+
+      // 효과음 텍스트 설정
+      const soundEffectTexts = ["탁! 탁!", "와글와글!", "보글보글~", "짜잔!"];
+
+      // 캡션 텍스트 설정
+      const captionTexts = [
+        "신선한 재료를 준비합니다",
+        "재료를 손질합니다",
+        "맛있게 조리 중입니다",
+        "완성된 요리를 즐겨보세요",
+      ];
+
+      // Lambda 함수에서 데이터 가져오기
+      async function fetchDataFromLambda() {
+        try {
+          // device_id가 있으면 URL에 추가
+          let endpoint = LAMBDA_ENDPOINT;
+          if (deviceId) {
+            endpoint = `${LAMBDA_ENDPOINT}?device_id=${deviceId}`;
+          }
+
+          const response = await fetch(endpoint);
+          if (!response.ok) {
+            throw new Error("API 응답이 올바르지 않습니다.");
+          }
+          return await response.json();
+        } catch (error) {
+          console.error("데이터를 가져오는 중 오류가 발생했습니다:", error);
+          return null;
+        }
+      }
+
+      // 감정 표시 형식 지정
+      function formatEmotions(emotions) {
+        if (!emotions) return "";
+
+        const colorOptions = [
+          "#ff9999",
+          "#99ff99",
+          "#99ffff",
+          "#9999ff",
+          "#ff99ff",
+        ];
+
+        return emotions
+          .split(",")
+          .map((emotion, index) => {
+            const colorIndex = index % colorOptions.length;
+            return `<span class="emotion-highlight" style="background-color: ${
+              colorOptions[colorIndex]
+            };">${emotion.trim()}</span>`;
+          })
+          .join(" ");
+
+        // return emotions
+        //   .split(",")
+        //   .map(
+        //     (emotion) =>
+        //       `<span class="emotion-highlight">${emotion.trim()}</span>`
+        //   )
+        //   .join(" ");
+      }
+
+      // 데이터를 가져와 화면에 표시하는 함수
+      async function renderData() {
+        try {
+          const data = await fetchDataFromLambda();
+          console.log(data);
+          if (!data) {
+            throw new Error("데이터를 가져오지 못했습니다.");
+          }
+
+          const comicGrid = document.getElementById("comicGrid");
+          const comicTitle = document.getElementById("comicTitle");
+          const userEmotions = document.getElementById("userEmotions");
+          const userEpisode = document.getElementById("userEpisode");
+          // const recommendTitle = document.getElementById("recommendTitle");
+          const recommendFoodTitle =
+            document.getElementById("recommendFoodTitle");
+          const recommendDescription = document.getElementById(
+            "recommendDescription"
+          );
+          const reason1 = document.getElementById("reason1");
+          const reason2 = document.getElementById("reason2");
+          const reason3 = document.getElementById("reason3");
+
+          // 로딩 표시 제거
+          comicGrid.innerHTML = "";
+
+          // 에피소드 정보를 제목에 적용 (쉼표로 구분하여 줄바꿈)
+          let titleText =
+            data.result?.recommendation_result?.title ||
+            data.item?.menu[0] ||
+            data.item?.name ||
+            "오늘의 백반기행";
+
+          // 아이템 이름이 제목에 포함되어 있으면 강조 표시
+          if (data.result?.recommendation_result?.title && data.item?.name) {
+            const itemName = data.item.name;
+            if (data.result.recommendation_result.title.includes(itemName)) {
+              titleText = data.result.recommendation_result.title.replace(
+                itemName,
+                `<emotion-highlight>${itemName}</emotion-highlight>`
+              );
+            }
+          }
+
+          comicTitle.innerHTML = titleText.split(",").join(",<br>");
+
+          // 미디어 패널 생성
+          const mediaList = data.media_list || [];
+          mediaList.forEach((mediaUrl, index) => {
+            if (index >= 4) return; // 최대 4개 패널만 표시
+
+            const panel = document.createElement("div");
+            panel.className = "comic-panel";
+
+            // 미디어 타입에 따라 이미지 또는 비디오 태그 생성
+            if (mediaUrl && mediaUrl.endsWith(".mp4")) {
+              panel.innerHTML = `
+                <video controls loop autoplay muted playsinline>
+                  <source src="${mediaUrl}" type="video/mp4">
+                  브라우저가 비디오를 지원하지 않습니다.
+                </video>               
+                <div class="sound-effect panel-${index + 1}-effect">${
+                soundEffectTexts[index]
+              }</div>
+                <div class="panel-caption">${captionTexts[index]}</div>
+              `;
+            } else {
+              panel.innerHTML = `
+                <img src="${mediaUrl}" alt="${index + 1}">
+                <div class="sound-effect panel-${index + 1}-effect">${
+                soundEffectTexts[index]
+              }</div>
+                <div class="panel-caption">${captionTexts[index]}</div>
+              `;
+            }
+
+            comicGrid.appendChild(panel);
+          });
+
+          // 추천 정보 표시
+          const recommend = data.recommend || {};
+          const recommendResult = data.result?.recommendation_result || {};
+
+          // 텍스트 내용 표시
+          userEmotions.innerHTML = formatEmotions(recommend.user_emotion);
+          userEpisode.textContent = recommend.user_episode || "";
+          // recommendTitle.textContent = recommendResult.title || "오늘의 추천 메뉴";
+          recommendFoodTitle.textContent = data.episode || "";
+          recommendDescription.textContent = recommendResult.description || "";
+          reason1.textContent = recommendResult.reason_1 || "";
+          reason2.textContent = recommendResult.reason_2 || "";
+          reason3.textContent = recommendResult.reason_3 || "";
+
+          // 비디오 자동 재생 설정
+          document.querySelectorAll("video").forEach((video) => {
+            video.play().catch((error) => {
+              console.warn("자동 재생이 제한되었습니다:", error);
+            });
+          });
+
+          // 데이터 로드 후 타이머 재시작
+          startRefreshTimer();
+        } catch (error) {
+          // 오류 처리
+          const comicGrid = document.getElementById("comicGrid");
+          const userEmotions = document.getElementById("userEmotions");
+          const userEpisode = document.getElementById("userEpisode");
+          // const recommendTitle = document.getElementById("recommendTitle");
+          const recommendFoodTitle =
+            document.getElementById("recommendFoodTitle");
+          const recommendDescription = document.getElementById(
+            "recommendDescription"
+          );
+          const reason1 = document.getElementById("reason1");
+          const reason2 = document.getElementById("reason2");
+          const reason3 = document.getElementById("reason3");
+
+          comicGrid.innerHTML =
+            '<div class="error-message">컷을 불러오는 중 오류가 발생했습니다.</div>';
+          userEmotions.textContent = "";
+          userEpisode.textContent = "";
+          // recommendTitle.textContent = "";
+          recommendFoodTitle.textContent = "";
+          recommendDescription.textContent = "";
+          reason1.textContent = "";
+          reason2.textContent = "";
+          reason3.textContent = "";
+
+          console.error("렌더링 중 오류가 발생했습니다:", error);
+
+          // 오류 발생해도 타이머 재시작
+          startRefreshTimer();
+        }
+      }
+
+      // 타이머 시작 함수
+      function startRefreshTimer() {
+        // 이전 타이머가 있으면 제거
+        if (timerInterval) {
+          clearInterval(timerInterval);
+        }
+
+        // 카운트다운 초기화
+        countdownValue = REFRESH_INTERVAL;
+        document.getElementById("countdown").textContent = countdownValue;
+
+        // 새 타이머 시작
+        timerInterval = setInterval(() => {
+          countdownValue--;
+          document.getElementById("countdown").textContent = countdownValue;
+
+          // 시간이 다 되면 페이지 갱신
+          if (countdownValue <= 0) {
+            clearInterval(timerInterval);
+            renderData();
+          }
+        }, 1000);
+      }
+
+      // 페이지 로드 시 데이터 가져오기 및 타이머 시작
+      document.addEventListener("DOMContentLoaded", () => {
+        renderData();
+      });
+    </script>
+  </body>
 </html>
