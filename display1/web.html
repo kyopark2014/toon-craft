@@ -5,6 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>자동 새로고침 뷰어</title>
     <script>
+        // URL에서 device_id 파라미터 가져오기
+        const urlParams = new URLSearchParams(window.location.search);
+        const deviceId = urlParams.get('device_id');
+        
+        // device_id가 없으면 기본 viewer.html 사용
+        const viewerUrl = deviceId 
+            ? `https://d2w79zoxq32d33.cloudfront.net/html/viewer_${deviceId}.html`
+            : 'https://d2w79zoxq32d33.cloudfront.net/html/viewer.html';
+            
+        // iframe src 설정
+        window.onload = function() {
+            document.getElementById('viewer-frame').src = viewerUrl;
+        }
+
         // 30초마다 페이지 새로고침
         setTimeout(function() {
             window.location.reload();
@@ -13,9 +27,8 @@
 </head>
 <body>
     <iframe 
-        src="https://d2w79zoxq32d33.cloudfront.net/html/viewer.html" 
+        id="viewer-frame"
         style="width: 100%; height: 100vh; border: none;"
         title="뷰어"
     ></iframe>
 </body>
-</html>
