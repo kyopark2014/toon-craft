@@ -756,7 +756,7 @@ def lambda_handler(event, context):
         'questions': questions,
         'recommend': recommend,
         'recommend_id': recommend_id,
-        'result': json.dumps(explaination_obj, ensure_ascii=False),
+        'result': explaination_obj,
         'timestamp': datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
     })
     print(f"update latest result: {response}")
