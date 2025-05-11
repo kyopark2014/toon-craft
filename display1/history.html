@@ -169,8 +169,8 @@
             "오늘의 백반기행";
 
           // 아이템 이름이 제목에 포함되어 있으면 강조 표시
-          if (data.result?.recommendation_result?.title && data.item?.name) {
-            const itemName = data.item.name;
+          if (data.result?.recommendation_result?.title && data.item) {
+            const itemName = data.item?.name;
             if (data.result.recommendation_result.title.includes(itemName)) {
               titleText = data.result.recommendation_result.title.replace(
                 itemName,
@@ -264,17 +264,24 @@
         }
       }
 
+      let currentTimer = null;
+
       // 새로고침 타이머 설정
       function setupRefreshTimer() {
         let timeLeft = REFRESH_INTERVAL;
         const countdownElement = document.getElementById("countdown");
         const timerBar = document.getElementById("timerBar");
 
+        // 이전 타이머가 있다면 제거
+        if (currentTimer) {
+          clearInterval(currentTimer);
+        }
+
         // 초기 타이머 바 설정
         timerBar.style.width = "100%";
 
         // 1초마다 타이머 업데이트
-        const timer = setInterval(() => {
+        currentTimer = setInterval(() => {
           timeLeft--;
           countdownElement.textContent = timeLeft;
 
@@ -284,28 +291,23 @@
 
           // 시간이 다 되면 데이터 확인
           if (timeLeft <= 0) {
-            clearInterval(timer);
+            clearInterval(currentTimer);
             renderData();
             setupRefreshTimer(); // 타이머 재설정
           }
         }, 1000);
-
-        // 새로고침 버튼 이벤트 핸들러
-        document
-          .getElementById("refreshButton")
-          .addEventListener("click", () => {
-            clearInterval(timer);
-            renderData();
-            setupRefreshTimer();
-          });
-
-        return timer;
       }
 
       // 페이지 로드 시 데이터 렌더링 및 타이머 설정
       document.addEventListener("DOMContentLoaded", () => {
         renderData();
         setupRefreshTimer();
+
+        // 새로고침 버튼 이벤트 핸들러 - 한 번만 설정
+        document.getElementById("refreshButton").addEventListener("click", () => {
+          renderData();
+          setupRefreshTimer();
+        });
       });
     </script>
   </body>
