@@ -32,7 +32,7 @@ def generate_image_prompt(image_bytes, episode):
     }}
     """
 
-    claude = BedrockClaude(region='us-east-1', modelId=BedrockModel.SONNET_3_7_CR)
+    claude = BedrockClaude(region='us-east-1', modelId=BedrockModel.NOVA_PRO_CR)
     response = claude.converse(text=PROMPT, image=image_bytes, format='jpeg')
     print(f"LLM response: {response}")
     
