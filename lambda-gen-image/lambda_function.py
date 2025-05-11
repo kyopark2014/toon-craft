@@ -89,61 +89,121 @@ def generate_image(image_bytes, prompt):
     
     
 def lambda_handler(event, context):
-    # Parse body if it's a string
-    if isinstance(event.get('body'), str):
-        body = json.loads(event['body'])
-    else:
-        body = event.get('body', event)
-    
-    # Extract values from body
-    user_id = body['user_id']
-    persona = body['persona']
-    device_id = body.get('device_id', '1')
-    image_key = body['image_key']
-    
-    # S3 클라이언트 생성
-    s3_client = boto3.client('s3')
+    try:
+        # Parse body if it's a string
+        if isinstance(event.get('body'), str):
+            body = json.loads(event['body'])
+        else:
+            body = event.get('body', event)
+        
+        # Extract values from body
+        try:
+            user_id = body['user_id']
+            persona = body['persona']
+            device_id = body.get('device_id', '1')
+            image_key = body['image_key']
+        except KeyError as e:
+            print(f"Missing required field: {str(e)}")
+            return {
+                'statusCode': 400,
+                'body': json.dumps({'error': f'Missing required field: {str(e)}'}),
+                'headers': {
+                    'Content-Type': 'application/json',
+                    'Access-Control-Allow-Origin': '*'
+                }
+            }
+        
+        # S3 클라이언트 생성
+        s3_client = boto3.client('s3')
 
-    # S3에서 이미지 데이터 읽기
-    response = s3_client.get_object(
-        Bucket=S3_BUCKET,
-        Key=f"{S3_BUCKET_INPUT_FOLDER}/{image_key}"
-    )
-    img_data = response['Body'].read()
+        try:
+            # S3에서 이미지 데이터 읽기
+            response = s3_client.get_object(
+                Bucket=S3_BUCKET,
+                Key=f"{S3_BUCKET_INPUT_FOLDER}/{image_key}"
+            )
+            img_data = response['Body'].read()
+        except Exception as e:
+            print(f"Error reading from S3: {str(e)}")
+            return {
+                'statusCode': 404,
+                'body': json.dumps({'error': 'Image not found in S3'}),
+                'headers': {
+                    'Content-Type': 'application/json',
+                    'Access-Control-Allow-Origin': '*'
+                }
+            }
 
-    # 이미지 데이터를 바이트 배열로 변환
-    img_bytes = bytes(img_data)
-    
-    image_prompt = generate_image_prompt(img_bytes, persona).get('prompt', 'smiling face')
-    print(f"image_prompt: {image_prompt}")
-    
-    img = generate_image(img_bytes, image_prompt)
-    
-    # Convert base64 to bytes
-    img_bytes = base64.b64decode(img)
-    
-    # Generate unique filename
-    output_key = f"{S3_BUCKET_OUTPUT_FOLDER}/{user_id}.jpeg"
-    
-    # Upload to S3
-    s3_client.put_object(
-        Bucket=S3_BUCKET,
-        Key=output_key,
-        Body=img_bytes,
-        ContentType='image/jpeg'
-    )
-    
-    # Generate CloudFront URL
-    cf_url = f"{CF_DOMAIN}/{output_key}"
-    
-    result = {
-        "user_id": user_id,
-        "device_id": device_id,
-        "image_prompt": image_prompt,
-        "img": cf_url,
-    }
+        # 이미지 데이터를 바이트 배열로 변환
+        img_bytes = bytes(img_data)
+        
+        try:
+            image_prompt = generate_image_prompt(img_bytes, persona).get('prompt', 'smiling face')
+            print(f"image_prompt: {image_prompt}")
+            
+            img = generate_image(img_bytes, image_prompt)
+            
+            # Convert base64 to bytes
+            img_bytes = base64.b64decode(img)
+        except Exception as e:
+            print(f"Error generating image: {str(e)}")
+            return {
+                'statusCode': 500,
+                'body': json.dumps({'error': 'Failed to generate image'}),
+                'headers': {
+                    'Content-Type': 'application/json',
+                    'Access-Control-Allow-Origin': '*'
+                }
+            }
+        
+        try:
+            # Generate unique filename
+            output_key = f"{S3_BUCKET_OUTPUT_FOLDER}/{user_id}.jpeg"
+            
+            # Upload to S3
+            s3_client.put_object(
+                Bucket=S3_BUCKET,
+                Key=output_key,
+                Body=img_bytes,
+                ContentType='image/jpeg'
+            )
+        except Exception as e:
+            print(f"Error uploading to S3: {str(e)}")
+            return {
+                'statusCode': 500,
+                'body': json.dumps({'error': 'Failed to upload generated image'}),
+                'headers': {
+                    'Content-Type': 'application/json',
+                    'Access-Control-Allow-Origin': '*'
+                }
+            }
+        
+        # Generate CloudFront URL
+        cf_url = f"{CF_DOMAIN}/{output_key}"
+        
+        result = {
+            "user_id": user_id,
+            "device_id": device_id,
+            "image_prompt": image_prompt,
+            "img": cf_url,
+        }
 
-    return {
-        'statusCode': 200,
-        'body': result
-    }
+        return {
+            'statusCode': 200,
+            'body': json.dumps(result),
+            'headers': {
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin': '*'
+            }
+        }
+        
+    except Exception as e:
+        print(f"Unexpected error: {str(e)}")
+        return {
+            'statusCode': 500,
+            'body': json.dumps({'error': 'Internal server error'}),
+            'headers': {
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin': '*'
+            }
+        }
