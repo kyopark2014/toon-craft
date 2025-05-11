@@ -476,16 +476,16 @@ def lambda_handler(event, context):
     print(f"preparation: {preparation}")
     print(f"cooking: {cooking}")
     
-    selected_ingredients = random.choice(ingredients) if ingredients else default_urls[0]
+    selected_ingredients = random.choice(ingredients) if ingredients else None
     print(f"selected_ingredients: {selected_ingredients}")
 
-    selected_preparation = random.choice(preparation) if preparation else default_urls[1]
+    selected_preparation = random.choice(preparation) if preparation else None
     print(f"selected_preparation: {selected_preparation}")
         
-    selected_cooking = random.choice(cooking) if cooking else default_urls[2]
+    selected_cooking = random.choice(cooking) if cooking else None
     print(f"selected_cooking: {selected_cooking}")
 
-    selected_plating = random.choice(plating) if plating else default_urls[3]
+    selected_plating = random.choice(plating) if plating else None
     print(f"selected_plating: {selected_plating}")  
 
     preparation_url = get_url(selected_preparation)
