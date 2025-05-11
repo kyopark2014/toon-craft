@@ -380,18 +380,18 @@ def lambda_handler(event, context):
     qa_pairs = event.get('qa_pairs', '')
     device_id = event.get('device_id', '1')  # Default to '1' if not provided
 
-    # recommend = """
-    # #### Today's You
-    # - **Current Emotion**: Sense of achievement, passion, joy
-    # - **Situation**: Experienced a successful moment when your idea was adopted in a discussion with colleagues
-    # #### Recommended Food
-    # ```txt
-    # A Korean dish with vibrant colors and harmonious flavors that will enrich your sense of achievement, perfect for someone with both scientific curiosity and artistic sensibility
-    # ```
-    # #### Reason for Recommendation
-    # Today, you've had a perfectly balanced day like a perfect cup of coffee! It's a special day when your idea, combining both passion for science and technology and artistic sensibility, shone brightly. You need food that will make that sense of achievement even more fulfilling.
-    # How about a Korean dish with harmonious flavors, just like savoring different types of coffee? The vibrant colors will satisfy your artistic sensibility, and the diverse flavor combinations will stimulate your scientific curiosity. Feel the thrill of success in your mouth, and make today's joy even more special. May your evening shine as brightly as your brilliant idea!
-    # """
+    #FIXME
+    lambda_client = boto3.client('lambda')
+    result = lambda_client.invoke(
+        FunctionName='toons-craft-gen-image',
+        InvocationType='Event',
+        Payload=json.dumps({
+            "user_id": user_id,
+            "device_id": device_id,
+            "episode": episode,
+            "image_key": f"{user_id}.jpeg"
+        }, ensure_ascii=False)
+    )
 
     # search_keyword = extract_txt_block(recommend)
     search_keyword = recommend['food_query']

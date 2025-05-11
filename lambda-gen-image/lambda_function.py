@@ -99,7 +99,7 @@ def lambda_handler(event, context):
         # Extract values from body
         try:
             user_id = body['user_id']
-            persona = body['persona']
+            episode = body['episode']
             device_id = body.get('device_id', '1')
             image_key = body['image_key']
         except KeyError as e:
@@ -138,7 +138,7 @@ def lambda_handler(event, context):
         img_bytes = bytes(img_data)
         
         try:
-            image_prompt = generate_image_prompt(img_bytes, persona).get('prompt', 'smiling face')
+            image_prompt = generate_image_prompt(img_bytes, episode).get('prompt', 'smiling face')
             print(f"image_prompt: {image_prompt}")
             
             img = generate_image(img_bytes, image_prompt)
