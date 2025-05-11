@@ -110,5 +110,15 @@ export class CdkToonCraftStack extends cdk.Stack {
 
       },
     });
+
+    const lambdaGenImage = new lambda.DockerImageFunction(this, `lambda-gen-image-for-${projectName}`, {
+      description: 'toons-craft gen-image api',
+      functionName: `toons-craft-gen-image`,
+      code: lambda.DockerImageCode.fromImageAsset(path.join(__dirname, '../../lambda-gen-image')),
+      timeout: cdk.Duration.seconds(180),
+      role: roleLambdaTools,
+      environment: {
+      }
+    });
   }
 }
