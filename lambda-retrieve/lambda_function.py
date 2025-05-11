@@ -359,6 +359,7 @@ def update_recommendation_to_dynamodb(id, item, episode, media_list, persona, qu
             'questions': questions,
             'recommend': recommend,
             'recommend_id': recommend_id,
+            'gen_image': gen_image,
             'result': json.loads(result),
         }
         
