@@ -42,6 +42,8 @@ def lambda_handler(event, context):
             query_params = {p.split('=')[0]: p.split('=')[1] for p in event['rawQueryString'].split('&') if '=' in p}
             if 'id' in query_params:
                 item_id = query_params['id']
+
+        print(f"selected item id: {item_id}")
         
         # ID가 있으면 해당 ID로 항목 검색
         if item_id:
