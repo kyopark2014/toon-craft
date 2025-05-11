@@ -388,7 +388,7 @@ def lambda_handler(event, context):
         Payload=json.dumps({
             "user_id": user_id,
             "device_id": device_id,
-            "episode": episode,
+            "episode": selected_episode,
             "image_key": f"{user_id}.jpeg"
         }, ensure_ascii=False)
     )
