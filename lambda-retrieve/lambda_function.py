@@ -36,154 +36,6 @@ default_urls = [
         "https://d3dybxg1g4fwkj.cloudfront.net/multi_shot_automated_2/120_Doenjang_Jjigae_4_plating_3_20250414_202723_20250506_115350/qpnyuhqrjhwh/shot_0002.mp4"
     ]
 
-viewer = """
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Image and Video Gallery</title>
-    <style>
-        body {{
-            background-color: #F0F0F0;
-            background-image: url('https://d2w79zoxq32d33.cloudfront.net/html/background.jpg');
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            min-height: 100vh;
-            margin: 0;
-        }}
-        .gallery {{
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 0;
-            padding: 0;
-            max-width: 100%;
-            margin: 0;
-            height: calc(100vh - 300px);
-            align-items: center;
-        }}
-        .gallery-item {{
-            width: 100%;
-            height: calc((100vh - 300px) / 2);
-            object-fit: cover;
-            border: 8px solid #000;
-            box-shadow: 8px 8px 0 #000;
-            transition: transform 0.3s ease;
-            background-color: #fff;
-            position: relative;
-            overflow: hidden;
-            margin: 4px;
-        }}
-        .gallery-item::before {{
-            content: '';
-            position: absolute;
-            top: -4px;
-            left: -4px;
-            right: -4px;
-            bottom: -4px;
-            border: 2px solid #000;
-            z-index: 1;
-            pointer-events: none;
-        }}
-        .gallery-item::after {{
-            content: '';
-            position: absolute;
-            top: 4px;
-            left: 4px;
-            right: 4px;
-            bottom: 4px;
-            border: 2px solid #000;
-            z-index: 1;
-            pointer-events: none;
-        }}
-        .gallery-item:hover {{
-            transform: scale(1.02);
-        }}
-        .gallery-item video {{
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            position: absolute;
-            top: 0;
-            left: 0;
-            transform: none;
-        }}
-        .text-content {{
-            position: relative;
-            background-color: rgba(255, 255, 255, 0.9);
-            padding: 20px;
-            font-family: 'Noto Sans KR', sans-serif;
-            line-height: 1.6;
-            margin-top: 20px;
-            height: 300px;
-            overflow-y: auto;
-            border: 2px solid #000;
-            box-shadow: 4px 4px 0 #000;
-        }}
-        /* Scrollbar styling */
-        .text-content::-webkit-scrollbar {{
-            width: 8px;
-        }}
-        .text-content::-webkit-scrollbar-track {{
-            background: #F1F1F1;
-        }}
-        .text-content::-webkit-scrollbar-thumb {{
-            background: #888;
-            border-radius: 4px;
-        }}
-        .text-content::-webkit-scrollbar-thumb:hover {{
-            background: #555;
-        }}
-        /* Remove existing scroll animation */
-        @keyframes scrollText {{
-            0% {{
-                transform: none;
-            }}
-            100% {{
-                transform: none;
-            }}
-        }}
-        .text-content:hover {{
-            animation-play-state: paused;
-        }}
-        .text-content h4 {{
-            margin: 0 0 10px 0;
-            color: #333;
-        }}
-        .text-content ul {{
-            margin: 0;
-            padding-left: 20px;
-        }}
-        .text-content pre {{
-            background-color: #F5F5F5;
-            padding: 10px;
-            border-radius: 5px;
-            margin: 10px 0;
-        }}
-    </style>
-</head>
-<body>
-    <div class="gallery">
-        <video class="gallery-item" controls loop autoplay muted>
-            <source src="{url1}" type="video/mp4">
-            Your browser does not support video.
-        </video>
-        <img class="gallery-item" src="{url2}" alt="Cooking image">
-        <img class="gallery-item" src="{url3}" alt="Plating image">
-        <video class="gallery-item" controls loop autoplay muted>
-            <source src="{url4}" type="video/mp4">
-            Your browser does not support video.
-        </video>
-    </div>
-    <div class="text-content">
-        {text}
-    </div>
-</body>
-</html>
-"""
-def generate_html(url1, url2, url3, url4, text):
-    return viewer.format(url1=url1, url2=url2, url3=url3, url4=url4, text=text)
 
 embedding_client = BedrockEmbedding()
 
@@ -244,6 +96,17 @@ def vector_search(vector, k: int = 3):
             }
         )
     return res['hits']['hits']
+
+def check_s3_file_exists(bucket_name, key):
+    """
+    Check if a file exists in S3 bucket
+    """
+    s3_client = boto3.client('s3')
+    try:
+        s3_client.head_object(Bucket=bucket_name, Key=key)
+        return True
+    except:
+        return False
 
 def get_s3_list(bucket_name, prefix):
     """
@@ -425,27 +288,6 @@ def get_url(selected_data):
         #return None
 
 def explain_food_recommendation(persona, selected_episode, qa_pairs, food_data):
-    """Generate explanation for food recommendation."""
-    PROMPT = f"""You are an empathetic AI food curator who understands my situation and emotions to recommend food.
-
-    ### Input Data:
-    My Profile: {persona}
-    Selected Episode: {selected_episode}
-    Questions and Answers: {qa_pairs}
-    Recommended Food: {food_data.get('menu', '')}
-    Restaurant Name: {food_data.get('name', '')}
-    Chef Heo Young-man's Opinion: {food_data.get('review', '')}
-
-    ### Your Task:
-    1. Explain how the recommended food matches my current situation.
-    2. Explain how this food can improve my mood or condition.
-    3. Explain the characteristics and appealing points of the food with reference to Chef Heo's review.
-    4. Write in an empathetic and warm tone, using appropriate emojis to make it friendly.
-
-    ### Output:
-    Write a food recommendation explanation tailored to my situation.
-    """
-
     PROMPT_rev = f"""당신은 나의 상황과 감정을 이해하고 음식을 추천하는 위트 있는 AI 큐레이터입니다.
 
     ### 입력 데이터:
@@ -488,7 +330,7 @@ def explain_food_recommendation(persona, selected_episode, qa_pairs, food_data):
         return response
 
 # Create a function to update DynamoDB table with the recommendation data
-def update_recommendation_to_dynamodb(id, item, episode, media_list, persona, questions, recommend, recommend_id, result):
+def update_recommendation_to_dynamodb(id, item, episode, media_list, persona, questions, recommend, recommend_id, gen_image, result):
     """
     Update the tooncraft DynamoDB table with recommendation data
     
@@ -634,16 +476,16 @@ def lambda_handler(event, context):
     print(f"preparation: {preparation}")
     print(f"cooking: {cooking}")
     
-    selected_ingredients = random.choice(ingredients) if ingredients else None
+    selected_ingredients = random.choice(ingredients) if ingredients else default_urls[0]
     print(f"selected_ingredients: {selected_ingredients}")
 
-    selected_preparation = random.choice(preparation) if preparation else None
+    selected_preparation = random.choice(preparation) if preparation else default_urls[1]
     print(f"selected_preparation: {selected_preparation}")
         
-    selected_cooking = random.choice(cooking) if cooking else None
+    selected_cooking = random.choice(cooking) if cooking else default_urls[2]
     print(f"selected_cooking: {selected_cooking}")
 
-    selected_plating = random.choice(plating) if plating else None
+    selected_plating = random.choice(plating) if plating else default_urls[3]
     print(f"selected_plating: {selected_plating}")  
 
     preparation_url = get_url(selected_preparation)
@@ -677,31 +519,6 @@ def lambda_handler(event, context):
     }    
     print(f"info: {info}")
     
-    # Create formatted HTML content from the explanation object
-    recommendation = explaination_obj.get('recommendation_result', {})
-    html_content = f"""
-        <h2>{recommendation.get('title', '')}</h2>
-        <p>{recommendation.get('description', '')}</p>
-        <h3>추천 이유</h3>
-        <p>1. {recommendation.get('reason_1', '')}</p>
-        <p>2. {recommendation.get('reason_2', '')}</p>
-        <p>3. {recommendation.get('reason_3', '')}</p>
-    """
-    html = generate_html(urls[0], urls[1], urls[2], urls[3], html_content)
-    print(f"html: {html}")
-    # Upload HTML file to S3
-    s3_client = boto3.client('s3')
-    try:
-        s3_client.put_object(
-            Bucket=image_bucket_name,
-            Key=f'html/viewer_{device_id}.html',
-            Body=html,
-            ContentType='text/html'
-        )
-        print("HTML file successfully uploaded.")
-    except Exception as e:
-        print(f"Error occurred while uploading HTML file: {e}")
-
     # Update DynamoDB with the recommendation data
     episode = selected_episode
     media_list = [
@@ -727,6 +544,13 @@ def lambda_handler(event, context):
     ]
     recommend = recommend
     recommend_id = id
+    
+    # Check if generated image exists in S3
+    gen_image_key = f"gen_image/{user_id}.jpeg"
+    if check_s3_file_exists(image_bucket_name, gen_image_key):
+        gen_image = f"{image_cf}/gen_image/{user_id}.jpeg"
+    else:
+        gen_image = ""
 
     result = update_recommendation_to_dynamodb(
         id=user_id,
@@ -737,6 +561,7 @@ def lambda_handler(event, context):
         questions=questions,
         recommend=recommend,
         recommend_id=recommend_id,
+        gen_image=gen_image,
         result=json.dumps(explaination_obj, ensure_ascii=False)
     )
     
@@ -756,6 +581,7 @@ def lambda_handler(event, context):
         'questions': questions,
         'recommend': recommend,
         'recommend_id': recommend_id,
+        'gen_image': gen_image,
         'result': explaination_obj,
         'timestamp': datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
     })
