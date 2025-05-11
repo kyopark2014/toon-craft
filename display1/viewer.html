@@ -47,6 +47,13 @@
     </div>
 
     <script>
+      // 설정값
+      const LAMBDA_ENDPOINT =
+        "https://2hqhh2v9gd.execute-api.ap-northeast-1.amazonaws.com/prd/toons-craft-latest";
+      const CF_DOMAIN = "https://d2w79zoxq32d33.cloudfront.net";
+      const REFRESH_INTERVAL = 5; // 자동 갱신 시간(초)
+      const deviceId = getUrlParameter("device_id"); // URL에서 device_id 파라미터 추출
+
       function loadCSS(localPath, fallbackURL) {
         const link = document.createElement("link");
         link.rel = "stylesheet";
@@ -66,22 +73,7 @@
         document.head.appendChild(link);
       }
 
-      loadCSS(
-        "./styles.css",
-        "https://d2w79zoxq32d33.cloudfront.net/html/styles.css"
-      );
-
-      // URL에서 파라미터 추출하는 함수
-      function getUrlParameter(name) {
-        const urlParams = new URLSearchParams(window.location.search);
-        return urlParams.get(name);
-      }
-
-      // 설정값
-      const LAMBDA_ENDPOINT =
-        "https://2hqhh2v9gd.execute-api.ap-northeast-1.amazonaws.com/prd/toons-craft-latest";
-      const REFRESH_INTERVAL = 5; // 자동 갱신 시간(초)
-      const deviceId = getUrlParameter("device_id"); // URL에서 device_id 파라미터 추출
+      loadCSS("./styles.css", `${CF_DOMAIN}/html/styles.css`);
 
       // 타이머 변수
       let timerInterval;
@@ -108,6 +100,12 @@
 
       let latestData = null;
 
+      // URL에서 파라미터 추출하는 함수
+      function getUrlParameter(name) {
+        const urlParams = new URLSearchParams(window.location.search);
+        return urlParams.get(name);
+      }
+
       // Lambda 함수에서 데이터 가져오기
       async function fetchDataFromLambda() {
         try {
@@ -131,7 +129,7 @@
       const generateRandomColor = () => {
         // 밝은 색상 위주로 생성
         const hue = Math.floor(Math.random() * 360);
-        return `hsl(${hue}, 100%, 70%)`;
+        return `hsl(${hue}, 100%, 80%)`;
       };
 
       // 감정 표시 형식 지정
@@ -240,7 +238,16 @@
 
           // 텍스트 내용 표시
           userEmotions.innerHTML = formatEmotions(recommend.user_emotion);
-          userEpisode.textContent = recommend.user_episode || "";
+
+          // Set user episode content
+          userEpisode.innerHTML = `
+            ${
+              data.id
+                ? `<div class="episode-image"><img src="${CF_DOMAIN}/gen_image/${data?.id}.jpeg" onerror="this.style.display='none'"></div>`
+                : ""
+            }
+            <div class="episode-text">${recommend.user_episode || ""}</div>
+          `;
           // recommendTitle.textContent = recommendResult.title || "오늘의 추천 메뉴";
           recommendFoodTitle.textContent = data.episode || "";
           recommendDescription.textContent = recommendResult.description || "";
