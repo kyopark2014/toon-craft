@@ -6,6 +6,29 @@ import random
 REGION_NAME = "ap-northeast-1"
 DYNAMO_TABLE = "tooncraft"
 
+def get_random_item(table):
+    # 전체 아이템 수 확인
+    count_response = table.scan(Select='COUNT')
+    total_items = count_response['Count']
+    
+    if total_items == 0:
+        return {
+            'statusCode': 404,
+            'headers': {
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin': '*'
+            },
+            'body': json.dumps({'error': 'No items found in the table'})
+        }
+    
+    # 랜덤으로 아이템 선택
+    scan_response = table.scan()
+    items = scan_response['Items']
+    
+    # 랜덤으로 아이템 하나 선택
+    item = random.choice(items)
+    return item
+
 def lambda_handler(event, context):
     """
     DynamoDB에서 아이템을 조회하여 JSON 데이터를 반환하는 Lambda 함수
@@ -49,42 +72,15 @@ def lambda_handler(event, context):
         if item_id:
             response = table.get_item(Key={'id': item_id})
             
-            # ID로 검색한 항목이 없으면 에러 반환
+            # ID로 검색한 항목이 없으면 랜덤으로 항목 선택
             if 'Item' not in response:
-                return {
-                    'statusCode': 404,
-                    'headers': {
-                        'Content-Type': 'application/json',
-                        'Access-Control-Allow-Origin': '*'
-                    },
-                    'body': json.dumps({'error': f'Item with ID {item_id} not found'})
-                }
+                return get_random_item(table)
             
             # ID로 검색한 항목이 있으면 해당 항목 반환
             item = response['Item']
         else:
             # ID가 없으면 랜덤으로 항목 선택
-            
-            # 전체 아이템 수 확인
-            count_response = table.scan(Select='COUNT')
-            total_items = count_response['Count']
-            
-            if total_items == 0:
-                return {
-                    'statusCode': 404,
-                    'headers': {
-                        'Content-Type': 'application/json',
-                        'Access-Control-Allow-Origin': '*'
-                    },
-                    'body': json.dumps({'error': 'No items found in the table'})
-                }
-            
-            # 랜덤으로 아이템 선택
-            scan_response = table.scan()
-            items = scan_response['Items']
-            
-            # 랜덤으로 아이템 하나 선택
-            item = random.choice(items)
+            item = get_random_item(table)
         
         # JSON 형식으로 직접 응답 (변환 없이)
         return {
