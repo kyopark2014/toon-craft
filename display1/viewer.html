@@ -244,6 +244,9 @@
 
           // Set user episode content
           userEpisode.innerHTML = `
+            <div class="speech-bubble bubble-bottom" style="position: relative; margin-bottom: 15px;">${
+              recommend.recommend_reason || ""
+            }</div>
             ${
               data.id
                 ? `<div class="episode-image"><img src="${CF_DOMAIN}/gen_image/${data?.id}.jpeg" onerror="this.style.display='none'"></div>`

@@ -273,40 +273,40 @@ body {
   border-top: 3px solid #000;
 }
 
-/* 말풍선 스타일 개선 */
+/* 말풍선 스타일 */
 .speech-bubble {
-  position: absolute;
+  position: relative;
   background-color: #fff;
   border: 3px solid #000;
   border-radius: 20px;
   padding: 10px 15px;
   font-family: "Comic Neue", cursive;
   font-weight: bold;
-  font-size: 1.1rem;
-  max-width: 70%;
+  font-size: 1.3rem;
+  max-width: 80%;
   text-align: center;
   box-shadow: 4px 4px 0 #000;
   z-index: 5;
   transform: rotate(-2deg);
   transition: transform 0.3s ease;
+  margin: 0 auto 20px;
 }
 
 .speech-bubble:hover {
   transform: rotate(0) scale(1.05);
 }
 
-/* 말풍선 꼬리 스타일 개선 */
 .speech-bubble.bubble-bottom::after {
   content: "";
   position: absolute;
   width: 20px;
   height: 20px;
-  background-color: white;
+  background-color: #fff;
   border-right: 3px solid #000;
   border-bottom: 3px solid #000;
   bottom: -10px;
-  left: 30px;
-  transform: rotate(45deg);
+  left: 50%;
+  transform: translateX(-50%) rotate(45deg);
   z-index: -1;
 }
 
