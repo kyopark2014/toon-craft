@@ -412,7 +412,8 @@ def lambda_handler(event, context):
 
     item = ""
     try:
-        response = dynamodb.get_item(
+        dynamodb_client = boto3.client('dynamodb', region_name=REGION_NAME)
+        response = dynamodb_client.get_item(
             TableName=DYNAMO_TABLE,
             Key={'id': {'S': id}}
         )
