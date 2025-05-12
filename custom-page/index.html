@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>ToonCraft | AWS Summit Seoul 2025</title>
+        <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <meta content="width=device-width, minimal-ui, initial-scale=1.0, maximum-scale=1.0, user-scalable=0;" name="viewport">
+        <meta name="color-scheme" content="light dark">
+        <meta name="supported-color-schemes" content="light dark">
+        <link href="https://fonts.googleapis.com/css2?family=Gaegu:wght@300;400;700&display=swap" rel="stylesheet">
+        <style>
+            body {
+                margin: 0;
+                padding: 0;
+                font-family: 'Gaegu', cursive;
+            }
+            .media-grid {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 20px;
+                width: 100%;
+                max-width: 500px;
+                margin: 0 auto;
+                background: #fff;
+                padding: 20px;
+                border-radius: 20px;
+                box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
+                box-sizing: border-box;
+            }
+            .media-item {
+                width: 100%;
+                margin: 0;
+                box-sizing: border-box;
+                transition: all 0.3s ease;
+                position: relative;
+            }
+            .media-item:hover {
+                transform: translateY(-3px);
+            }
+            .media-item::before {
+                content: '';
+                position: absolute;
+                top: -6px;
+                left: -6px;
+                right: -6px;
+                bottom: -6px;
+                background: linear-gradient(45deg, #f8f6e7, #fff5e6);
+                border-radius: 15px;
+                z-index: -1;
+                opacity: 0;
+                transition: opacity 0.3s ease;
+            }
+            .media-item:hover::before {
+                opacity: 1;
+            }
+            .media-item img, .media-item video {
+                width: 100%;
+                height: auto;
+                display: block;
+                border: 3px solid #ffffff;
+                object-fit: cover;
+                aspect-ratio: 1/1;
+                border-radius: 12px;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            }
+            .emoji {
+                font-family: "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+                font-size: 1.2em;
+                vertical-align: middle;
+                line-height: 1;
+            }
+            .emoji-container {
+                display: inline-block;
+                margin: 0 5px;
+            }
+            .header-image {
+                width: 100%;
+                max-width: 600px;
+                margin: 20px auto;
+                display: block;
+                border-radius: 8px;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            }
+            /* 모든 div 내용을 가운데 정렬하는 스타일 */
+            div {
+                text-align: center;
+            }
+            .photo-strip-title {
+                grid-column: 1 / -1;
+                color: #333;
+                font-size: 24px;
+                font-weight: bold;
+                margin-bottom: 15px;
+                text-align: center;
+                font-family: 'Gaegu', cursive;
+                position: relative;
+                padding-bottom: 12px;
+            }
+            .photo-strip-title::after {
+                content: '';
+                position: absolute;
+                bottom: 0;
+                left: 50%;
+                transform: translateX(-50%);
+                width: 40px;
+                height: 2px;
+                background: linear-gradient(to right, #f8f6e7, #fff5e6);
+            }
+            .photo-strip-date {
+                grid-column: 1 / -1;
+                color: #666;
+                font-size: 14px;
+                margin-top: 15px;
+                text-align: center;
+                font-family: 'Gaegu', cursive;
+                font-style: italic;
+            }
+            .step-label {
+                position: absolute;
+                top: -8px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: #fff;
+                padding: 3px 10px;
+                border-radius: 12px;
+                font-family: 'Gaegu', cursive;
+                font-size: 12px;
+                color: #888;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+                z-index: 1;
+                white-space: nowrap;
+            }
+            .content-container {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                margin: 20px auto;
+                max-width: 100%;
+                padding: 0 15px;
+            }
+            .left-column {
+                width: 100%;
+                max-width: 400px;
+                margin: 0 auto;
+            }
+            .right-column {
+                width: 100%;
+                max-width: 400px;
+                margin: 20px auto 0;
+                text-align: left;
+            }
+            .right-column div {
+                text-align: left;
+            }
+            .illustration-container {
+                width: 100%;
+                max-width: 400px;
+                margin: 0 auto 20px;
+            }
+            .text-content {
+                width: 100%;
+                max-width: 600px;
+                margin: 0 auto;
+            }
+            .main-header {
+                width: 100%;
+                max-width: 400px;
+                margin: 0 auto;
+                position: relative;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            .speech-bubble {
+                position: absolute;
+                left: -20px;
+                top: 40%;
+                transform: translateY(-50%);
+                background: white;
+                padding: 15px;
+                border-radius: 15px;
+                box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+                max-width: 200px;
+                margin-right: 20px;
+            }
+            .speech-bubble:after {
+                content: '';
+                position: absolute;
+                right: -10px;
+                top: 50%;
+                transform: translateY(-50%);
+                border-style: solid;
+                border-width: 10px 0 10px 10px;
+                border-color: transparent transparent transparent white;
+            }
+            .speech-bubble-text {
+                font-family: 'Gaegu', cursive;
+                font-size: 16px;
+                line-height: 1.4;
+                color: #333;
+                margin: 0;
+                font-weight: 700;
+            }
+            .page-container {
+                max-width: 1200px;
+                margin: 0 auto;
+                padding: 0 15px;
+            }
+            @media (max-width: 768px) {
+                .content-container {
+                    flex-direction: column;
+                    padding: 0 10px;
+                }
+                .left-column 
+                    flex: 0 0 100%;
+                    padding-right: 0;
+                    margin-bottom: 30px;
+                    margin-left: auto;
+                    margin-right: auto;
+                }
+                .right-column {
+                    flex: 0 0 100%;
+                    padding-left: 0;
+                    padding: 0 15px;
+                }
+                .media-grid {
+                    width: 85%;
+                    max-width: 320px;
+                    margin: 0 auto;
+                }
+                .media-item {
+                    margin: 4px 0;
+                }
+                .media-item img, .media-item video {
+                    border-width: 2px;
+                }
+                .main-header img {
+                    width: 80% !important;
+                }
+                .header-image {
+                    margin: 15px auto;
+                }
+                .photo-strip-title {
+                    font-size: 14px;
+                }
+                .photo-strip-date {
+                    font-size: 11px;
+                }
+            }
+            
+            @media (max-width: 480px) {
+                .media-grid {
+                    grid-template-columns: 1fr;
+                    gap: 15px;
+                    padding: 15px;
+                    max-width: 400px;
+                }
+                .content-container {
+                    margin: 10px auto;
+                }
+                .right-column {
+                    padding: 0 10px;
+                }
+                .photo-strip-title {
+                    font-size: 22px;
+                    margin-bottom: 15px;
+                }
+                .step-label {
+                    font-size: 11px;
+                    padding: 2px 8px;
+                    top: -6px;
+                }
+                .photo-strip-date {
+                    font-size: 13px;
+                    margin-top: 10px;
+                }
+            }
+            .profile-section {
+                background: white;
+                border-radius: 15px;
+                padding: 20px;
+                margin-bottom: 20px;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            }
+            .profile-title {
+                font-family: 'Gaegu', cursive;
+                font-size: 24px;
+                font-weight: 700;
+                color: #333;
+                margin-bottom: 15px;
+                text-align: center;
+            }
+            .profile-content {
+                font-family: 'Gaegu', cursive;
+                font-size: 18px;
+                line-height: 1.6;
+                color: #444;
+                margin-bottom: 20px;
+            }
+            .qa-section {
+                display: flex;
+                justify-content: space-between;
+                gap: 15px;
+                margin: 20px 0;
+            }
+            .qa-item {
+                flex: 1;
+                padding: 15px;
+                border-radius: 8px;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+                transform: rotate(-2deg);
+                transition: transform 0.3s ease;
+            }
+            .qa-item:nth-child(1) {
+                background-color: #FFE4E1;
+                transform: rotate(-2deg);
+            }
+            .qa-item:nth-child(2) {
+                background-color: #E0FFFF;
+                transform: rotate(1deg);
+            }
+            .qa-item:nth-child(3) {
+                background-color: #F0FFF0;
+                transform: rotate(-1deg);
+            }
+            .qa-item:hover {
+                transform: rotate(0deg) scale(1.05);
+            }
+            .answer {
+                font-family: 'Gaegu', cursive;
+                font-size: 16px;
+                color: #333;
+                font-weight: 700;
+                text-align: center;
+                line-height: 1.4;
+            }
+            .recommendation-section {
+                background: white;
+                border-radius: 15px;
+                padding: 25px;
+                margin: 20px auto;
+                max-width: 600px;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            }
+            .recommendation-title {
+                font-family: 'Gaegu', cursive;
+                font-size: 28px;
+                font-weight: 700;
+                color: #333;
+                margin-bottom: 20px;
+                text-align: center;
+                line-height: 1.4;
+            }
+            .recommendation-description {
+                font-family: 'Gaegu', cursive;
+                font-size: 18px;
+                line-height: 1.6;
+                color: #444;
+                margin-bottom: 25px;
+            }
+            .recommendation-reasons {
+                background: #f8f6e7;
+                border-radius: 12px;
+                padding: 20px;
+            }
+            .reason-item {
+                font-family: 'Gaegu', cursive;
+                font-size: 17px;
+                line-height: 1.6;
+                color: #555;
+                margin-bottom: 15px;
+                padding-left: 20px;
+                position: relative;
+            }
+            .reason-item:before {
+                content: '✨';
+                position: absolute;
+                left: -5px;
+                top: 0;
+            }
+            .reason-item:last-child {
+                margin-bottom: 0;
+            }
+            .user-emotion {
+                display: inline-block;
+                background: #f0e6d2;
+                padding: 5px 12px;
+                border-radius: 20px;
+                font-size: 16px;
+                margin-bottom: 15px;
+                color: #666;
+            }
+            .illustration-section {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 40px;
+                width: 100%;
+                max-width: 600px;
+                margin: 0 auto;
+            }
+            .illustration-container {
+                width: 100%;
+                max-width: 400px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            .illustration-container img {
+                width: 100%;
+                height: auto;
+                border-radius: 12px;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            }
+            .section-title {
+                font-family: 'Gaegu', cursive;
+                font-size: 24px;
+                font-weight: 700;
+                color: #333;
+                text-align: center;
+                margin: 40px auto 20px;
+                position: relative;
+                padding-bottom: 12px;
+                max-width: 500px;
+            }
+            .section-title::after {
+                content: '';
+                position: absolute;
+                bottom: 0;
+                left: 50%;
+                transform: translateX(-50%);
+                width: 40px;
+                height: 2px;
+                background: linear-gradient(to right, #f8f6e7, #fff5e6);
+            }
+        </style>
+    </head>
+    <body>
+        <div style="background-color:#f8f6e7; background:#f8f6e7;">
+            <div class="page-container">
+                <table width="100%" cellpadding="0" cellspacing="0" style="border-spacing: 0; mso-table-lspace: 0pt; mso-table-rspace: 0pt; margin:0 auto;width:100%;max-width:100%;border-collapse: collapse;" border="0" align="center">
+                    <tbody>
+                        <tr>
+                            <td valign="top" style="text-align: center;" class="main-header">
+                                <div class="speech-bubble">
+                                    <p class="speech-bubble-text">나는 500곳이 넘는 맛집을 다녀왔지. 내 추천은 믿어도 좋아</p>
+                                </div>
+                                <img src="https://d710ry44thcvf.cloudfront.net/hur-character.png" alt="AWS Summit Seoul" style="width: 50%;" constrain="true" imagepreview="false">
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <table width="100%" cellpadding="0" cellspacing="0" style="border-spacing: 0; mso-table-lspace: 0pt; mso-table-rspace: 0pt; margin:0 auto;width:100%;max-width:100%;border-collapse: collapse;" border="0" align="center">
+                    <tbody>
+                        <tr>
+                            <td>
+                                <table width="100%" cellpadding="0" cellspacing="0" style="border-spacing: 0; mso-table-lspace: 0pt; mso-table-rspace: 0pt; margin:0 auto;width:100%;max-width:100%;border-collapse: collapse;" border="0" align="center">
+                                    <tbody>
+                                        <tr>
+                                            <td height="30" style="line-height:1px;font-size:1px;">&nbsp;</td>
+                                        </tr>
+                                        <tr>
+                                            <td valign="top" style="vertical-align:top;color:#333;font-size:24px;line-height:1.2;text-align:center;font-family: 'Gaegu', cursive;font-weight:700;">
+                                                <div>
+                                                    <div style="word-break: keep-all; font-size: 28px; mso-line-height: exactly; line-height: 40px;">당신은 이런 사람이군요! <span class="emoji">😊</span></div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td height="10" style="line-height:1px;font-size:1px;">&nbsp;</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                
+                                <!-- 추가된 이미지 -->
+                                <table width="100%" cellpadding="0" cellspacing="0" style="border-spacing: 0; mso-table-lspace: 0pt; mso-table-rspace: 0pt; margin:0 auto;width:100%;max-width:100%;border-collapse: collapse;" border="0" align="center">
+                                    <tbody>
+                                        <tr>
+                                            <td valign="center" style="text-align: center;">
+                                                <div class="profile-section">
+                                                    <div class="profile-title">👨‍💼 프로필</div>
+                                                    <div class="profile-content">이 인물은 30대 후반의 남성으로 보입니다. 안경을 쓰고 있어 지적인 이미지를 가지고 있으며, 웃는 표정으로 보아 친근하고 활발한 성격을 가지고 있는 것으로 보입니다. 아마도 학문적인 분야에서 일하는 직업을 가지고 있을 것 같습니다.</div>
+                                                </div>
+                                                <div class="qa-section-sample">
+                                                    <div class="qa-item-sample">
+                                                        <div class="answer-sample">나는 500곳이 넘는 맛집을 다녀왔지. 내 추천은 믿어도 좋아</div>
+                                                    </div>
+                                                    <div class="qa-item-sample">
+                                                        <div class="answer-sample">나는 500곳이 넘는 맛집을 다녀왔지. 내 추천은 믿어도 좋아</div>
+                                                    </div>
+                                                    <div class="qa-item-sample">
+                                                        <div class="answer-sample">나는 500곳이 넘는 맛집을 다녀왔지. 내 추천은 믿어도 좋아</div>
+                                                    </div>
+                                                </div>
+
+                                                <!-- 일러스트 섹션 -->
+                                                <div class="illustration-section">
+                                                    <div class="illustration-container">
+                                                        <img src="https://d710ry44thcvf.cloudfront.net/contents/972/review_illust_food.png" alt="음식 일러스트">
+                                                    </div>
+                                                </div>
+
+                                <!-- 추천 섹션 시작 -->
+                                <div class="recommendation-section-sample">
+                                    <div class="user-emotion-sample">설렘, 성취감</div>
+                                    <div class="recommendation-title-sample">백합죽과 백합찜, 당신의 창의적 여정에 '전망좋은집'의 절묘한 한 끼 🌸</div>
+                                    <div class="recommendation-description-sample">
+                                        새로운 베이킹 취미를 발견하고 전통적인 디저트에 관심을 보이는 당신에게, 전통의 맛을 현대적으로 재해석한 '전망좋은집'의 백합 요리를 추천합니다. 클래식한 맛을 추구하면서도 창의적 표현을 즐기는 당신처럼, 이 음식은 전통의 깊이와 섬세한 예술성이 공존합니다.
+                                    </div>
+                                    <div class="recommendation-reasons-sample">
+                                        <div class="reason-item-sample">
+                                            다디단 백합죽이 몸 안의 약해진 기둥을 보듬어주듯, 새로운 취미를 시작한 당신의 열정적인 마음을 따뜻하게 위로해줄 거예요. 마치 당신이 만든 첫 케이크처럼, 이 음식도 말이 필요 없는 감동을 선사합니다.
+                                        </div>
+                                        <div class="reason-item-sample">
+                                            통통하게 살이 올라 잘 쪄진 백합찜과 녹두, 깨가 조화롭게 어우러진 백합죽은 재료 본연의 맛을 해치지 않는 섬세함이 돋보입니다. 전통적인 디저트를 선호하는 당신처럼, 이 요리도 기본에 충실하면서 훌륭한 맛을 자랑합니다.
+                                        </div>
+                                        <div class="reason-item-sample">
+                                            다섯 종류의 김치를 죽에 얹어 먹으면 그 조합이 백합의 똑 다물린 입처럼 절묘하다고 하네요. 이런 창의적인 조합은 예술적 활동을 즐기는 당신의 감성을 자극하며, 친구들과 함께 나눌 수 있는 새로운 미식 경험이 될 것입니다.
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- 추천 섹션 종료 -->
+
+                                <!-- 2x2 컷 섹션 -->
+                                <div class="section-title-sample">직접 만들어보고 싶다면 아래 순서를 기억하라구! ✨</div>
+                                <div class="media-grid-sample">
+                                    <div class="media-item-sample">
+                                        <div class="step-label-sample">Step 1. 재료 준비</div>
+                                    </div>
+                                    <div class="media-item-sample">
+                                        <div class="step-label-sample">Step 2. 조리 과정</div>
+                                    </div>
+                                    <div class="media-item-sample">
+                                        <div class="step-label-sample">Step 3. 마무리</div>
+                                    </div>
+                                    <div class="media-item-sample">
+                                        <div class="step-label-sample">Step 4. 완성</div>
+                                    </div>
+                                    <div class="photo-strip-date-sample">2024.05.15</div>
+                                </div>
+                                <div style="height: 50px;"></div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </body>
+</html>
