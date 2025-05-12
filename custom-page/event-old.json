@@ -1,0 +1,42 @@
+{
+"id": "local_test",
+"device_id": "ap-northeast-1:3c3f82b4-f7a3-c0ea-1d28-1aab6e7218c5",
+"episode": "회의 중 팀원들이 웃으며 커피를 마시는 모습을 보고, 그녀는 커피 한 잔을 받아 마시며 웃음을 참지 못했어요. ☕️😄",
+"media_list": [
+"https://d3dybxg1g4fwkj.cloudfront.net/single/familiar-15-menus2/120_Doenjang_Jjigae_1_ingredients_5_20250414_202423.png/1w48vx190dr8/output.mp4",
+"https://d2w79zoxq32d33.cloudfront.net/familiar-15-menus2/120_Doenjang_Jjigae_2_preparation_3_20250414_202518.png",
+"https://d2w79zoxq32d33.cloudfront.net/familiar-15-menus2/120_Doenjang_Jjigae_3_cooking_2_20250414_202622.png",
+"https://d3dybxg1g4fwkj.cloudfront.net/single/familiar-15-menus2/120_Doenjang_Jjigae_4_plating_1_20250414_202722.png/3wujaa3fzbip/output.mp4"
+],
+"persona": "이 인물은 여성으로 보이며, 나이대는 30대 중반으로 추정됩니다. 단정한 외모와 침착한 표정을 지니고 있어 직업적 성격이 강한 분으로 보입니다. 아마도 회사원이나 전문직에 종사하는 것 같습니다.",
+"questions": [
+{
+"question": "회의 중 팀원들과 함께 커피를 마시는 시간, 어떤 커피를 선호하나요?",
+"answer": "에스프레소 샷이 들어간 강렬한 블랙 커피"
+},
+{
+"question": "업무 외 시간에 가장 좋아하는 활동은 무엇인가요?",
+"answer": "산책을 하며 자연 속에서 편안한 시간 보내기"
+},
+{
+"question": "팀원들과 함께 프로젝트를 진행할 때, 어떤 역할을 가장 잘 수행하나요?",
+"answer": "리더로서 팀을 이끌고 방향을 제시하기"
+}
+],
+"recommend": {
+"user_emotion": "활기찬 리더십, 사회적 유대감, 커피 애호가, 자연을 사랑하는 도시인",
+"user_episode": "팀 회의 중 커피를 마시며 팀원들과 웃음을 나눈 순간",
+"food_query": "활력을 주면서도 마음을 차분하게 해주는 따뜻한 국물 요리",
+"recommend_reason": "강렬한 블랙커피를 즐기는 리더십 넘치는 당신, 오늘 팀원들과 웃음 가득한 회의를 마치고 나면 몸과 마음에 균형이 필요할 거예요. 따뜻한 국물은 커피의 강렬함을 부드럽게 중화시키면서도, 자연을 사랑하는 당신의 감성을 채워줄 거예요. 팀을 이끄는 책임감 속에서도 잠시 산책하듯 편안하게 숨을 고를 수 있는 작은 위로가 될 거예요."
+},
+"recommend_id": "120",
+"result": {
+"recommendation_result": {
+"title": "리더의 열정을 식히는 왕성식당의 새빨간 갈치조림 ☕️🔥",
+"description": "강렬한 블랙커피를 즐기는 리더님, 회의실 밖에서는 자연을 사랑하는 당신에게 왕성식당의 갈치조림은 업무의 긴장감을 풀어주면서도 리더십의 강인함을 유지해줄 완벽한 한 끼가 될 거예요.",
+"reason_1": "새빨간 비주얼과 달지 않은 깨끗한 맛은 마치 당신의 리더십처럼 강렬하면서도 균형 잡힌 매력을 선사합니다. 에스프레소처럼 강렬하지만 깔끔한 뒷맛이 인상적이죠.",
+"reason_2": "고춧가루의 칼칼함과 대파의 단맛이 조화를 이루는 양념은 팀을 이끄는 당신의 균형 잡힌 리더십을 닮았어요. 갈치 본연의 맛을 살린 정직한 조리법은 자연을 사랑하는 당신의 취향과도 일맥상통합니다.",
+"reason_3": "30년 넘게 남대문 시장을 지켜온 이 식당의 갈치조림은 시간이 지나도 변하지 않는 가치를 담고 있어요. 양념이 제대로 밴 무는 팀원들과 나누는 커피 타임처럼 소소하지만 특별한 순간을 선사할 거예요."
+}
+}
+}
