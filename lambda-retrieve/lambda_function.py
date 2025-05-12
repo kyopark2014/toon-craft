@@ -250,6 +250,28 @@ def lambda_handler(event, context):
     search_keyword = recommend['food_query']
     print(f"search_keyword: {search_keyword}")
 
+    # 초기 null 값으로 데이터 입력
+    initial_data = {
+        'user_id': user_id,
+        'recommend': recommend,
+        'persona': persona,
+        'device_id': device_id,
+        'id': user_id,
+        'item': None,
+        'episode': None,
+        'media_list': None,
+        'questions': None,
+        'recommend_id': None,
+        'gen_image': None,
+        'result': None,
+        'timestamp': datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    }
+
+    dynamodb = boto3.resource('dynamodb', region_name=REGION_NAME)
+    table = dynamodb.Table('tooncraft-latest')
+    response = table.put_item(Item=initial_data)
+    print(f"Initial data inserted: {response}")
+
     # Get embedding for user input
     user_embedding = embedding_client.embedding_text(search_keyword)
 
@@ -361,7 +383,6 @@ def lambda_handler(event, context):
     
     print(f"device_id: {device_id}")
     print(f"result: {result}")
-    
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     sending_data = {
         'device_id': device_id,
@@ -392,7 +413,6 @@ def lambda_handler(event, context):
         Payload=json.dumps(sending_data, ensure_ascii=False)
     )
     print(f"result: {result}")
-    
     return {
         'statusCode': 200,
         'body': {
