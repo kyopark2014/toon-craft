@@ -381,27 +381,16 @@ def lambda_handler(event, context):
     qa_pairs = event.get('qa_pairs', '')
     device_id = event.get('device_id', '1')  # Default to '1' if not provided
 
-    #FIXME
-    lambda_client = boto3.client('lambda')
-    result = lambda_client.invoke(
-        FunctionName='toons-craft-gen-image',
-        InvocationType='Event',
-        Payload=json.dumps({
-            "user_id": user_id,
-            "device_id": device_id,
-            "episode": selected_episode,
-            "image_key": f"{user_id}.jpeg"
-        }, ensure_ascii=False)
-    )
-
     # search_keyword = extract_txt_block(recommend)
     search_keyword = recommend['food_query']
+    print(f"search_keyword: {search_keyword}")
 
     # Get embedding for user input
     user_embedding = embedding_client.embedding_text(search_keyword)
 
     # Search for similar foods
     similar_foods = vector_search(user_embedding, k=3)
+    print(f"similar_foods: {similar_foods}")
 
     if similar_foods and len(similar_foods) > 0:
         recommended_food = similar_foods[0]
@@ -503,6 +492,19 @@ def lambda_handler(event, context):
 
     if ingredients_url is None or preparation_url is None or cooking_url is None or plating_url is None:
         urls = default_urls
+    
+    #FIXME
+    lambda_client = boto3.client('lambda')
+    result = lambda_client.invoke(
+        FunctionName='toons-craft-gen-image',
+        InvocationType='Event',
+        Payload=json.dumps({
+            "user_id": user_id,
+            "device_id": device_id,
+            "episode": selected_episode,
+            "image_key": f"{user_id}.jpeg"
+        }, ensure_ascii=False)
+    )
 
     explaination = explain_food_recommendation(persona, selected_episode, qa_pairs, food_data)
     print(f"explaination: {explaination}")
