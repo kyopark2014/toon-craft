@@ -572,9 +572,8 @@ def lambda_handler(event, context):
     print(f"device_id: {device_id}")
     print(f"result: {result}")
     
-    dynamodb = boto3.resource('dynamodb', region_name=REGION_NAME)
-    table = dynamodb.Table('tooncraft-latest')
-    response = table.put_item(Item={
+    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    sending_data = {
         'device_id': device_id,
         'user_id': user_id,
         'id': user_id,
@@ -587,8 +586,12 @@ def lambda_handler(event, context):
         'recommend_id': recommend_id,
         'gen_image': gen_image,
         'result': explaination_obj,
-        'timestamp': datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-    })
+        'timestamp': timestamp,
+    }
+    
+    dynamodb = boto3.resource('dynamodb', region_name=REGION_NAME)
+    table = dynamodb.Table('tooncraft-latest')
+    response = table.put_item(Item=sending_data)
     print(f"update latest result: {response}")
 
     # Invoke custom-page lambda function
@@ -596,17 +599,7 @@ def lambda_handler(event, context):
     result = lambda_client.invoke(
         FunctionName='custom-page',
         InvocationType='Event',
-        Payload=json.dumps({
-            "id": user_id,
-            "device_id": device_id,
-            "episode": episode,
-            "media_list": media_list,
-            "persona": persona,
-            "questions": questions,
-            "recommend": recommend,
-            "recommend_id": recommend_id,
-            "result": explaination_obj
-        }, ensure_ascii=False)
+        Payload=json.dumps(sending_data, ensure_ascii=False)
     )
     print(f"result: {result}")
     
