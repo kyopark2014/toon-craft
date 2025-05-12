@@ -309,18 +309,18 @@ def lambda_handler(event, context):
     urls = get_media_urls(id)
     print(f"urls: {urls}")
 
-    #FIXME
-    lambda_client = boto3.client('lambda')
-    result = lambda_client.invoke(
-        FunctionName='toons-craft-gen-image',
-        InvocationType='Event',
-        Payload=json.dumps({
-            "user_id": user_id,
-            "device_id": device_id,
-            "episode": selected_episode,
-            "image_key": f"{user_id}.jpeg"
-        }, ensure_ascii=False)
-    )
+    # Invoke Gen Image
+    # lambda_client = boto3.client('lambda')
+    # result = lambda_client.invoke(
+    #     FunctionName='toons-craft-gen-image',
+    #     InvocationType='Event',
+    #     Payload=json.dumps({
+    #         "user_id": user_id,
+    #         "device_id": device_id,
+    #         "episode": selected_episode,
+    #         "image_key": f"{user_id}.jpeg"
+    #     }, ensure_ascii=False)
+    # )
 
     explaination = explain_food_recommendation(persona, selected_episode, qa_pairs, food_data)
     print(f"explaination: {explaination}")
