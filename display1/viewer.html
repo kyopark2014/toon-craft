@@ -120,7 +120,8 @@
           if (!response.ok) {
             throw new Error("API 응답이 올바르지 않습니다.");
           }
-          return await response.json();
+          const data = await response.json();
+          return data;
         } catch (error) {
           console.error("데이터를 가져오는 중 오류가 발생했습니다:", error);
           return null;
@@ -152,6 +153,13 @@
           const data = await fetchDataFromLambda();
           if (!data) {
             throw new Error("데이터를 가져오지 못했습니다.");
+          }
+
+          console.log(data);
+
+          if (data.result == null) {
+            window.location.href = `https://d2w79zoxq32d33.cloudfront.net/html/comic_viewer_auto.html?device_id=${deviceId}`;
+            return;
           }
 
           if (latestData?.user_id === data?.user_id) {
