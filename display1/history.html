@@ -8,6 +8,7 @@
   <body>
     <div class="info-header">
       <div id="userEmotions"></div>
+      <div id="userPersona"></div>
       <div class="situation-box" id="userEpisode"></div>
     </div>
 
@@ -153,6 +154,7 @@
           const comicGrid = document.getElementById("comicGrid");
           const comicTitle = document.getElementById("comicTitle");
           const userEmotions = document.getElementById("userEmotions");
+          const userPersona = document.getElementById("userPersona");
           const userEpisode = document.getElementById("userEpisode");
           // const recommendTitle = document.getElementById("recommendTitle");
           const recommendFoodTitle =
@@ -226,6 +228,7 @@
 
           // 텍스트 내용 표시
           userEmotions.innerHTML = formatEmotions(recommend.user_emotion);
+          userPersona.textContent = data?.persona || "";
 
           // Set user episode content
           userEpisode.innerHTML = `
@@ -253,6 +256,7 @@
           // 오류 처리
           const comicGrid = document.getElementById("comicGrid");
           const userEmotions = document.getElementById("userEmotions");
+          const userPersona = document.getElementById("userPersona");
           const userEpisode = document.getElementById("userEpisode");
           // const recommendTitle = document.getElementById("recommendTitle");
           const recommendFoodTitle =
@@ -267,6 +271,7 @@
           comicGrid.innerHTML =
             '<div class="error-message">컷을 불러오는 중 오류가 발생했습니다.</div>';
           userEmotions.textContent = "";
+          userPersona.textContent = "";
           userEpisode.textContent = "";
           // recommendTitle.textContent = "";
           recommendFoodTitle.textContent = "";
