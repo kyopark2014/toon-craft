@@ -107,6 +107,7 @@ body {
   border: 5px solid #000;
   border-radius: 15px;
   padding: 20px;
+  padding-bottom: 5px;
   box-shadow: 10px 10px 0 #000;
   margin-top: 30px;
   margin-bottom: 30px;
@@ -408,6 +409,7 @@ body {
 }
 
 .text-content {
+  display: none;
   background-color: #fff;
   border: 5px solid #000;
   border-radius: 15px;
