@@ -30,13 +30,13 @@ def generate_questions(persona, selected_episode):
       - options: list[str]
     """
 
-    claude = BedrockClaude(region='us-east-1', modelId=BedrockModel.NOVA_LITE_CR)
-    res = claude.converse(text=PROMPT)
-    question_data = extract_json(res)
+    # claude = BedrockClaude(region='us-east-1', modelId=BedrockModel.NOVA_LITE_CR)
+    # res = claude.converse(text=PROMPT)
+    # question_data = extract_json(res)
     
-    # Handle case where questions list is returned
-    if 'questions' in question_data and len(question_data['questions']) > 0:
-        return question_data['questions'][:3]  # Ensure we only return 3 questions
+    # # Handle case where questions list is returned
+    # if 'questions' in question_data and len(question_data['questions']) > 0:
+    #     return question_data['questions'][:3]  # Ensure we only return 3 questions
     
     # Return default questions (in case of error)
     return [{
