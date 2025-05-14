@@ -174,7 +174,7 @@
 
           console.log(data);
 
-          if (data.result == null) {
+          if (data?.episode == null) {
             window.location.href = `https://d2w79zoxq32d33.cloudfront.net/html/comic_viewer_auto.html?device_id=${deviceId}`;
             return;
           }
