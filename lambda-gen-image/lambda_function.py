@@ -167,6 +167,8 @@ def lambda_handler(event, context):
                 Body=img_bytes,
                 ContentType='image/jpeg'
             )
+            
+            print('output_key', output_key)
         except Exception as e:
             print(f"Error uploading to S3: {str(e)}")
             return {
@@ -187,6 +189,8 @@ def lambda_handler(event, context):
             "image_prompt": image_prompt,
             "img": cf_url,
         }
+        
+        print('result: ', json.dumps(result))
 
         return {
             'statusCode': 200,
