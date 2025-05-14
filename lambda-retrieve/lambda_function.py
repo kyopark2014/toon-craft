@@ -172,7 +172,6 @@ def explain_food_recommendation(persona, selected_episode, qa_pairs, food_data):
     ### 입력 데이터:
     나의 프로필: {persona}
     선택한 에피소드: {selected_episode}
-    질문과 응답: {qa_pairs}
     추천된 음식: {food_data.get('menu', '')}
     식당 이름: {food_data.get('name', '')}
     식당 음식의 허영만 선생님 의견: {food_data.get('review', '')}
@@ -353,6 +352,28 @@ def lambda_handler(event, context):
     #     gen_image = f"{image_cf}/gen_image/{user_id}.jpeg"
     # else:
     #     gen_image = ""
+    
+    # send mid data before generating full tokens
+    mid_data = {
+        'user_id': user_id,
+        'recommend': recommend,
+        'persona': persona,
+        'device_id': device_id,
+        'id': user_id,
+        'item': item,
+        'episode': episode,
+        'media_list': media_list,
+        'questions': questions,
+        'recommend_id': id,
+        'gen_image': gen_image,
+        'result': None,
+        'timestamp': datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    }
+
+    dynamodb = boto3.resource('dynamodb', region_name=REGION_NAME)
+    table = dynamodb.Table('tooncraft-latest')
+    response = table.put_item(Item=mid_data)
+    print(f"Mid data inserted: {response}")
 
     explaination = explain_food_recommendation(persona, selected_episode, qa_pairs, food_data)
     print(f"explaination: {explaination}")
