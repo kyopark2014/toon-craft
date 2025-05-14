@@ -63,7 +63,7 @@ def generate_image(image_bytes, prompt):
         "imageVariationParams": {
             "images": [image_base64],
             "similarityStrength": similarity,
-            "text": f"{prompt}, asian, cartoon style, colorful digital illustration, high quality",
+            "text": f"{prompt}, asian, cartoon style, colorful digital illustration",
             "negativeText": "ugly, deformed, low quality, blurry, text"
         },
         "imageGenerationConfig": {
