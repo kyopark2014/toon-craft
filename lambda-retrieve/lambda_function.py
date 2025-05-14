@@ -321,6 +321,22 @@ def lambda_handler(event, context):
     #         "image_key": f"{user_id}.jpeg"
     #     }, ensure_ascii=False)
     # )
+
+    explaination = explain_food_recommendation(persona, selected_episode, qa_pairs, food_data)
+    print(f"explaination: {explaination}")
+    # Parse the explanation string into a JSON object
+    explaination_obj = json.loads(explaination)
+    
+    info = {
+        "img_key": food_data.get('img_key', ''),
+        "review": food_data.get('review', ''),
+        "name": food_data.get('name', ''),
+        "id": food_data.get('id', ''),
+        "item": item,
+        "urls": urls,
+        "explaination": explaination_obj
+    }    
+    print(f"info: {info}")
     
     # Update DynamoDB with the recommendation data
     episode = selected_episode
@@ -351,38 +367,6 @@ def lambda_handler(event, context):
         gen_image = f"{image_cf}/gen_image/{user_id}.jpeg"
     else:
         gen_image = ""
-        
-    result_mid = update_recommendation_to_dynamodb(
-        id=user_id,
-        item=item,
-        episode=selected_episode,
-        media_list=media_list,
-        persona=persona,
-        questions=questions,
-        recommend=recommend,
-        recommend_id=id,
-        gen_image=gen_image,
-        result=None
-    )
-    
-    print(f"device_id: {device_id}")
-    print(f"result: {result_mid}")
-
-    explaination = explain_food_recommendation(persona, selected_episode, qa_pairs, food_data)
-    print(f"explaination: {explaination}")
-    # Parse the explanation string into a JSON object
-    explaination_obj = json.loads(explaination)
-    
-    info = {
-        "img_key": food_data.get('img_key', ''),
-        "review": food_data.get('review', ''),
-        "name": food_data.get('name', ''),
-        "id": food_data.get('id', ''),
-        "item": item,
-        "urls": urls,
-        "explaination": explaination_obj
-    }    
-    print(f"info: {info}")
 
     result = update_recommendation_to_dynamodb(
         id=user_id,
