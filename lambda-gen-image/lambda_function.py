@@ -28,15 +28,15 @@ def generate_image_prompt(image_bytes, episode):
 
     출력 형식은 별도 설명 없이 다음 형식의 JSON으로 응답하세요:
     {{
-        "prompt": "영문 한 문장으로 이미지 생성 프롬프트. 이모지는 제거하세요"
+        "prompt": "영문 한 문장으로 이미지 생성 프롬프트를 900자 이내로 작성하세요. 이모지는 제거하세요"
     }}
     """
 
-    claude = BedrockClaude(region='us-east-1', modelId=BedrockModel.NOVA_PRO_CR)
-    response = claude.converse(text=PROMPT, image=image_bytes, format='jpeg')
-    print(f"LLM response: {response}")
-    
     try:
+        claude = BedrockClaude(region='us-east-1', modelId=BedrockModel.NOVA_PRO_CR)
+        response = claude.converse(text=PROMPT, image=image_bytes, format='jpeg')
+        print(f"LLM response: {response}")
+    
         # Find JSON content between curly braces
         start = response.find('{')
         end = response.rfind('}') + 1
@@ -54,6 +54,10 @@ def generate_image(image_bytes, prompt):
     seed = 512
     cfgScale = 9.0
     similarity = 0.8
+    
+    # Retry configuration
+    max_retries = 3
+    initial_delay = 1  # seconds
     
     # Convert bytes to base64 string
     image_base64 = base64.b64encode(image_bytes).decode('utf-8')
@@ -76,16 +80,32 @@ def generate_image(image_bytes, prompt):
     })
     
     bedrock = boto3.client(service_name='bedrock-runtime',
-                           region_name = REGION_NAME)
-    response = bedrock.invoke_model(
-        body=body,
-        modelId=MODEL_ID,
-        accept="application/json",
-        contentType="application/json"
-    )
-    response_body = json.loads(response.get("body").read())
-    image = response_body.get("images")[0]
-    return image
+                          region_name=REGION_NAME)
+    
+    import time
+    from botocore.exceptions import ClientError
+    
+    for attempt in range(max_retries):
+        try:
+            response = bedrock.invoke_model(
+                body=body,
+                modelId=MODEL_ID,
+                accept="application/json",
+                contentType="application/json"
+            )
+            response_body = json.loads(response.get("body").read())
+            image = response_body.get("images")[0]
+            return image
+            
+        except (ClientError, KeyError, json.JSONDecodeError) as e:
+            if attempt == max_retries - 1:  # Last attempt
+                print(f"Failed after {max_retries} attempts. Last error: {str(e)}")
+                raise  # Re-raise the last exception
+            
+            # Calculate delay with exponential backoff
+            delay = initial_delay * (2 ** attempt)  # 1s, 2s, 4s, ...
+            print(f"Attempt {attempt + 1} failed. Retrying in {delay} seconds... Error: {str(e)}")
+            time.sleep(delay)
     
     
 def lambda_handler(event, context):
