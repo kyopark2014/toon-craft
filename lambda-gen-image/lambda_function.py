@@ -2,6 +2,7 @@ import boto3
 import json
 import base64
 import uuid
+import random
 from genai_kit.aws.amazon_image import BedrockAmazonImage, ImageParams, NovaImageSize
 from genai_kit.aws.bedrock import BedrockModel
 from genai_kit.aws.claude import BedrockClaude
@@ -51,11 +52,11 @@ def generate_image_prompt(image_bytes, episode):
 def generate_image(image_bytes, prompt):
     width = 1280
     height = 720
-    seed = 512
     cfgScale = 9.0
     similarity = 0.8
     
     # Retry configuration
+    seed = 512  # initial seed value
     max_retries = 3
     initial_delay = 1  # seconds
     
@@ -87,6 +88,14 @@ def generate_image(image_bytes, prompt):
     
     for attempt in range(max_retries):
         try:
+            # Generate new random seed for each retry attempt
+            current_seed = seed if attempt == 0 else random.randint(1, 999999)
+            
+            # Update seed in the request body
+            request_body = json.loads(body)
+            request_body["imageGenerationConfig"]["seed"] = current_seed
+            body = json.dumps(request_body)
+            
             response = bedrock.invoke_model(
                 body=body,
                 modelId=MODEL_ID,
