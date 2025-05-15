@@ -179,7 +179,7 @@
             return;
           }
 
-          if (latestData?.gen_image === data?.gen_image) {
+          if (latestData?.gen_image == data?.gen_image) {
             startRefreshTimer();
             return;
           }
@@ -274,7 +274,7 @@
             }</div>
             ${
               data.id
-                ? `<div class="episode-image"><img src="${CF_DOMAIN}/gen_image/${data?.id}.jpeg" onerror="this.style.display='none'"></div>`
+                ? `<div class="episode-image"><img src="${CF_DOMAIN}/gen_image/${data?.id}.jpeg" onerror="setTimeout(() => { window.location.reload(); }, 500)"></div>`
                 : ""
             }
             <div class="episode-text">${recommend.user_episode || ""}</div>
