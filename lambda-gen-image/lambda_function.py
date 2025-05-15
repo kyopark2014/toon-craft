@@ -95,6 +95,7 @@ def generate_image(image_bytes, prompt):
             )
             response_body = json.loads(response.get("body").read())
             image = response_body.get("images")[0]
+            print('generate success!')
             return image
             
         except (ClientError, KeyError, json.JSONDecodeError) as e:
